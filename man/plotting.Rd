@@ -53,14 +53,14 @@ The \code{\link{plot.shallot.confidence}} function displays a chart that illustr
 ## Demonstrate pairwise.probabilities, as.matrix, confidence, and plot.
 data <- Theoph[, c("Wt", "Dose", "Time", "conc", "Subject")]
 truth <- as.numeric(levels(data[, ncol(data)]))[data[, ncol(data)]]
-distance <- dist(scale(data[, -ncol(data)]))
+distance <- dist(as.matrix(dist(scale(data[, -ncol(data)]))+0.001))
 decay <- decay.exponential(9.0, fixed = TRUE)
-attract <- attraction(distance(as.matrix(distance)),
+attract <- attraction(distance,
     permutation(n.items = nrow(data), fixed = FALSE), decay)
 mass <- mass(1.0, fixed = TRUE)
 discount <- discount(0.1, fixed = TRUE)
 distribution <- ewens.pitman.attraction(mass, discount, attract)
-samples <- collect(distribution, 500)
+samples <- sample.partition(distribution, 500)
 est <- estimate.partition(samples, max.subsets = 12, max.scans = 10)
 pp <- pairwise.probabilities(samples)
 print(pp)

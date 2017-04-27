@@ -40,11 +40,11 @@ truth <- as.numeric(levels(data[, ncol(data)]))[data[, ncol(data)]]
 distance <- dist(scale(data[, -ncol(data)]))
 
 ## Demonstrate attraction.
-attraction(distance(as.matrix(distance)), permutation(n.items = nrow(data) ,fixed = FALSE),
+attraction(distance, permutation(n.items = nrow(data) ,fixed = FALSE),
     decay.exponential(9.0, fixed = TRUE))
-attraction(distance(as.matrix(distance)), permutation(n.items = nrow(data), fixed = FALSE),
-    decay.subtraction(9.0, fixed = TRUE))
-attraction(distance(as.matrix(distance)), permutation(n.items = nrow(data), fixed = FALSE),
+attraction(distance, permutation(n.items = nrow(data), fixed = FALSE),
+    decay.subtraction(9.0, distance=distance, fixed = TRUE))
+attraction(distance, permutation(n.items = nrow(data), fixed = FALSE),
     decay.reciprocal(9.0, fixed = TRUE))
 }
 }

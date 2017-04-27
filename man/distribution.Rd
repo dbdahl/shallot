@@ -8,8 +8,6 @@
 \alias{print.shallot.distribution.ewensAttraction}
 \alias{ewens.pitman.attraction}
 \alias{print.shallot.distribution.ewensPitmanAttraction}
-\alias{ddcrp}
-\alias{print.shallot.distribution.ddcrp}
 \title{Distribution}
 \description{
   Functions handling the selection of the distribution method to be used.}
@@ -22,8 +20,6 @@ ewens.attraction(mass, attraction)
 \method{print}{shallot.distribution.ewensAttraction}(x, ...)
 ewens.pitman.attraction(mass, discount, attraction)
 \method{print}{shallot.distribution.ewensPitmanAttraction}(x, ...)
-ddcrp(mass,attraction)
-\method{print}{shallot.distribution.ddcrp}(x, ...)
 }
 \arguments{
 \item{mass}{An object of class \code{shallot.mass}.  Please see instructions for the \code{\link{mass}} function.}
@@ -41,9 +37,7 @@ The \code{\link{ewens}} function takes as its input the \code{shallot.mass} obje
 
 The \code{\link{ewens.pitman}} function does the same, but also includes the \code{shallot.discount} object.
 
-The \code{\link{ddcrp}} function does the same, but only takes the \code{shallot.mass} and \code{shallot.attraction} objects as its input.
-
-The \code{\link{ewens.attraction}} function does the same as \code{\link{ddcrp}}.
+The \code{\link{ewens.attraction}} function does the same.
 
 The \code{\link{ewens.pitman.attraction}} function does the same, except that it also includes the \code{shallot.discount} object.
 
@@ -69,7 +63,7 @@ truth <- as.numeric(levels(data[, ncol(data)]))[data[, ncol(data)]]
 distance <- dist(scale(data[, -ncol(data)]))
 
 ## Prepare attraction.
-attract <- attraction(distance(as.matrix(distance)), permutation(n.items =
+attract <- attraction(distance, permutation(n.items =
     nrow(data), fixed = FALSE), decay.exponential(9.0, fixed = TRUE))
 mass <- mass(1.0, fixed = TRUE)
 discount <- discount(0.1, fixed = TRUE)
@@ -86,9 +80,6 @@ ewens.attraction(mass, attract)
 
 ## Demonstrate ewens.pitman.attraction.
 ewens.pitman.attraction(mass, discount, attract)
-
-## Demonstrate ddcrp.
-ddcrp(mass, attract)
 }
 }
 

@@ -43,7 +43,7 @@ truth <- as.numeric(levels(data[, ncol(data)]))[data[, ncol(data)]]
 distance <- dist(scale(data[, -ncol(data)]))
 
 ## Prepare attraction.
-attract <- attraction(distance(as.matrix(distance)),
+attract <- attraction(distance,
     permutation(n.items=nrow(data), fixed = FALSE), decay.exponential(9.0, fixed = TRUE))
 mass <- mass(1.0, fixed = TRUE)
 discount <- discount(0.1, fixed = TRUE)
