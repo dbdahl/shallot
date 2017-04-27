@@ -1,0 +1,11 @@
+Package: shallot
+Type: Package
+Title: Random Partition Distribution Indexed by Pairwise Information
+Version: 0.2.8
+Date: 2017-04-27
+Description: Implements models described in the paper D. B. Dahl, R. Day, J. Tsai (2017), "Random Partition Distribution Indexed by Pairwise Information," Journal of the American Statistical Association, accepted.  Prior and posterior simulation (with a user-supplied likelihood) is supported.  Supporting functions for partition estimation and plotting are provided.
+Authors@R: c(person(given="David B.",family="Dahl",role=c("aut","cre"),email="dahl@stat.byu.edu"), person(given="The Apache Software Foundation",role=c("ctb","cph")))
+Imports: rscala (>= 2.0.0), stats
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+License: Apache License 2.0 | file LICENSE
