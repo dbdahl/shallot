@@ -5,22 +5,14 @@
 #### Simplified
 ##########################
 
-# Imports
-
-.rscalaDelay({
-
-s %@% "
-  import org.ddahl.shallot._
-  import org.apache.commons.math3.random.{ RandomDataGenerator => RDG }
-"
-
-})
-
-# Not exports: Random Data Generator
+# Imports and Random Data Generator
 
 .rscalaDelay({
 
 s %@% '
+  import org.ddahl.shallot._
+  import org.apache.commons.math3.random.{ RandomDataGenerator => RDG }
+
   def rdg() = {
     val r = new org.apache.commons.math3.random.RandomDataGenerator()
     val ints = R.evalI1("runif(2,-.Machine$integer.max,.Machine$integer.max)")
@@ -31,8 +23,6 @@ s %@% '
 '
 
 .rdg <- s$def() %.~% 'rdg()'
-
-# .rdg()
 
 })
 
@@ -183,23 +173,23 @@ permutation <- function(...,n.items=NULL,fixed=TRUE) {
 }
 
 # Not exported:  Permutation wrapper
-# Implementation 1
-
-.rscalaDelay({
-
-.permutation <- s$def(permutation=NULL) %.~% '
-  parameter.Permutation(R.evalI1(permutation+"$value - 1L"))
-'
-
-.permutationFactory <- s$def(permutation=NULL) %.~% '
-  if ( R.evalL0(permutation+"$fixed")  ) {
-    parameter.Permutation.factory(R.evalI1(permutation+"$value - 1L"))
-  } else {
-    parameter.Permutation.factory(R.evalI0(permutation+"$n.items"),rdg())
-  }
-'
-
-})
+# # Implementation 1
+# 
+# .rscalaDelay({
+# 
+# .permutation <- s$def(permutation=NULL) %.~% '
+#   parameter.Permutation(R.evalI1(permutation+"$value - 1L"))
+# '
+# 
+# .permutationFactory <- s$def(permutation=NULL) %.~% '
+#   if ( R.evalL0(permutation+"$fixed")  ) {
+#     parameter.Permutation.factory(R.evalI1(permutation+"$value - 1L"))
+#   } else {
+#     parameter.Permutation.factory(R.evalI0(permutation+"$n.items"),rdg())
+#   }
+# '
+# 
+# })
 
 # Implementation 2
 

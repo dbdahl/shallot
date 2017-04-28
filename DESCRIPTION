@@ -3,9 +3,9 @@ Type: Package
 Title: Random Partition Distribution Indexed by Pairwise Information
 Version: 0.2.8
 Date: 2017-04-27
-Description: Implements models described in the paper D. B. Dahl, R. Day, J. Tsai (2017), "Random Partition Distribution Indexed by Pairwise Information," Journal of the American Statistical Association, accepted.  Prior and posterior simulation (with a user-supplied likelihood) is supported.  Supporting functions for partition estimation and plotting are provided.
+Description: Implements models described in the paper D. B. Dahl, R. Day, J. Tsai (2017), "Random Partition Distribution Indexed by Pairwise Information," Journal of the American Statistical Association, in press.  Currently only the Ewens and Ewens Pitman distribution are available via prior simulation.  Other distributions, including the Ewens Pitman Attraction distribution, will be implemented in the future for both prior and posterior simulation with a user-supplied likelihood.  Supporting functions for partition estimation and plotting are also planned.
 Authors@R: c(person(given="David B.",family="Dahl",role=c("aut","cre"),email="dahl@stat.byu.edu"), person(given="The Apache Software Foundation",role=c("ctb","cph")))
+URL: https://github.com/dbdahl/shallot
+BugReports: https://github.com/dbdahl/shallot/issues
 Imports: rscala (>= 2.0.0), stats
-Suggests: knitr, rmarkdown
-VignetteBuilder: knitr
 License: Apache License 2.0 | file LICENSE

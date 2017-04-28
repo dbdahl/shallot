@@ -1,24 +1,25 @@
 \name{process.partition}
 \alias{process.partition}
-\alias{print.shallot.samples}
-\title{Process}
+\title{Process Sampled Partitions}
 \description{
-  A function that unpacks the number of partitions and the number of subsets per sample from the collected results.}
+  This function extracts the partitions from the results of the \code{\link{sample.partition} function.}
+}
 \usage{
-process(x, ...)
-\method{print}{shallot.samples}(x, ...)
+process.partition(x, sample.parameter = NULL, as.matrix = FALSE)
 }
 \arguments{
-\item{x}{An object of class \code{shallot.samples.raw}.}
-\item{...}{An unused argument.}
+\item{x}{An object from the \code{\link{sample.partition}} function.}
+\item{sample.parameter}{If not \code{NULL}, a function taking no arguments and returning a random sample from the centering distribution.}
+\item{as.matrix}{Should the results be returned as a matrix of cluster labels or lists of partitions?}
 }
 \details{
-This function, though not really necessary in the shallot program, allows the user to see the distribution of the number of subsets across the samples prior to factoring in maxSubsets and maxScans in estimating the partition.  The function also processes the data further if an internal variable from the \code{\link{sample.partition}} function called augmentedSamples is not \code{NULL}.
-
-The \code{\link{print.shallot.samples}} function is an internal function that prints a message listing the attributes of the results of the \code{\link{process.partition}} function.
+This function extracts the sampled partitions from the results of the \code{\link{sample.partition} function.}
 }
 \value{
-An object of class \code{shallot.samples} storing the number of partitions and the number of subsets per sample.
+A list containing either: i. a matrix of cluster labels in which each row
+represents a clusterings, or ii. a list containing partitions.  The list also
+contains sampled model parameters if \code{sample.parameter} is not
+\code{NULL}.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{

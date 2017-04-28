@@ -10,7 +10,7 @@ Functions setting mass and discount parameters and, in the case of them being ra
 mass(..., fixed = TRUE)
 discount(..., fixed = TRUE)
 \method{print}{shallot.mass}(x, ...)
-\method{discount}{shallot.mass}(x, ...)
+\method{print}{shallot.discount}(x, ...)
 }
 \arguments{
 \item{...}{A number greater than \code{0.0} representing the value of the mass or discount parameters.  Or, in the case of them being random, a vector of two numbers representing either: i. the shape and rate parameters of the gamma distribution for the mass, or ii. the shape parameters of the beta distribution for the discount.  This argument is currently ignored for the \code{\link{print.shallot.mass}} and \code{\link{print.shallot.discount}}, an unused argument.}
