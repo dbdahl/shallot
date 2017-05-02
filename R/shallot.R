@@ -146,9 +146,6 @@ permutation <- function(...,n.items=NULL,fixed=TRUE) {
   result
 }
 
-# Not exported:  Permutation wrapper
-# Implementation 2
-
 .permutation <- function(permutation) {
   s$.parameter.Permutation$apply(permutation$value-1L)
 }
