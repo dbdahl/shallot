@@ -176,7 +176,7 @@ print.shallot.permutation <- function(x, ...) {
 
 
 # Temperature
-temperature <- function(...,fixed=TRUE,max.temperature=Inf) {
+temperature <- function(...,fixed=TRUE) {
   x <- c(...)
   fixed <- as.logical(fixed)
   value <- 3
@@ -185,7 +185,7 @@ temperature <- function(...,fixed=TRUE,max.temperature=Inf) {
   if ( length(x) == 0 ) {
   } else if ( length(x) == 1 ) {
     if ( ! fixed ) stop("'fixed' should be TRUE if value is specified.")
-    value <- min(as.double(x[1]),0.99*max.temperature)
+    value <- as.double(x[1])
   } else if ( length(x) == 2 ) {
     if ( fixed ) stop("'fixed' should be FALSE if distribution parameters are specified.")
     shape <- as.double(x[1])
@@ -194,7 +194,7 @@ temperature <- function(...,fixed=TRUE,max.temperature=Inf) {
     if ( rate <= 0.0 ) stop("'rate' must be positive.")
     value <- shape/rate
   } else stop("Incorrect number of arguments.")
-  result <- list(value=value,shape=shape,rate=rate,fixed=fixed,max.temperature=max.temperature)
+  result <- list(value=value,shape=shape,rate=rate,fixed=fixed)
   class(result) <- "shallot.temperature"
   result
 }
@@ -211,70 +211,66 @@ print.shallot.temperature <- function(x, ...) {
 
 
 # Decay functions
-decay.reciprocal <- function(...,fixed=TRUE,distance=NULL) {
+decay.reciprocal <- function(...,distance,fixed=TRUE) {
   fixed <- as.logical(fixed)
-  max.temperature <- if ( ! is.null(distance) ) {
-    if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
-    x1 <- -log(.Machine$double.xmin)/log(max(distance))
-    x2 <- -(log(.Machine$double.xmax)-log(attr(distance,"Size")))/log(min(distance))
-    x <- Inf
-    if ( x1 > 0 ) x <- min(x,x1)
-    if ( x2 > 0 ) x <- min(x,x2)
-    x
-  } else Inf
+  if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
+  x1 <- -log(.Machine$double.xmin)/log(max(distance))
+  x2 <- -(log(.Machine$double.xmax)-log(attr(distance,"Size")))/log(min(distance))
+  x <- Inf
+  if ( x1 > 0 ) x <- min(x,x1)
+  if ( x2 > 0 ) x <- min(x,x2)
+  max.temperature <- x
   decay.generic(...,type="reciprocal",fixed=fixed,max.temperature=max.temperature)
 }
 
-decay.exponential <- function(...,fixed=TRUE,distance=NULL) {
+decay.exponential <- function(...,distance,fixed=TRUE) {
   fixed <- as.logical(fixed)
-  max.temperature <- if ( ! is.null(distance) ) {
-    if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
-    x1 <- -log(.Machine$double.xmin)/max(distance)
-    x2 <- -(log(.Machine$double.xmax)-log(attr(distance,"Size")))/min(distance)
-    x <- Inf
-    if ( x1 > 0 ) x <- min(x,x1)
-    if ( x2 > 0 ) x <- min(x,x2)
-    x
-  } else Inf
+  if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
+  x1 <- -log(.Machine$double.xmin)/max(distance)
+  x2 <- -(log(.Machine$double.xmax)-log(attr(distance,"Size")))/min(distance)
+  x <- Inf
+  if ( x1 > 0 ) x <- min(x,x1)
+  if ( x2 > 0 ) x <- min(x,x2)
+  max.temperature <- x
   decay.generic(...,type="exponential",fixed=fixed,max.temperature=max.temperature)
 }
 
-decay.subtraction <- function(...,multiplier=1.01,fixed=TRUE,distance=NULL) {
+decay.subtraction <- function(...,distance,multiplier=1.01,fixed=TRUE) {
   fixed <- as.logical(fixed)
-  max.temperature <- if ( ! is.null(distance) ) {
-    if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
-    max <- max(distance)
-    min <- min(distance)
-    max.dist <- multiplier*max
-    d1 <- ( max.dist - min )
-    d2 <- ( max.dist - max )
-    x1 <- log(.Machine$double.xmin)/log(d2)
-    x2 <- (log(.Machine$double.xmax)-log(attr(distance,"Size")))/log(d1)
-    x <- Inf
-    if ( x1 > 0 ) x <- min(x,x1)
-    if ( x2 > 0 ) x <- min(x,x2)
-    x
-  } else stop("'distance' must be specified for this decay function.")
+  if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
+  max <- max(distance)
+  min <- min(distance)
+  max.dist <- multiplier*max
+  d1 <- ( max.dist - min )
+  d2 <- ( max.dist - max )
+  x1 <- log(.Machine$double.xmin)/log(d2)
+  x2 <- (log(.Machine$double.xmax)-log(attr(distance,"Size")))/log(d1)
+  x <- Inf
+  if ( x1 > 0 ) x <- min(x,x1)
+  if ( x2 > 0 ) x <- min(x,x2)
+  max.temperature <- x
   decay.generic(...,type="subtraction",max.distance=max.dist,fixed=fixed,max.temperature=max.temperature)
 }
 
 decay.generic <- function(...,max.distance=NULL,type,fixed,max.temperature) {
-  result <- list(type=type,max.distance=max.distance,temperature=temperature(...,fixed=fixed,max.temperature=max.temperature))
+  result <- list(type=type,max.distance=max.distance,temperature=temperature(...,fixed=fixed),max.temperature=max.temperature)
   class(result) <- "shallot.decay"
   result
 }
 
 .decay <- function(decay) {
-       if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecay$new(I(decay$temperature$value))
-  else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecay$new(I(decay$temperature$value))
-  else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecay$new(I(decay$temperature$value),I(decay$max.distance))
+  temp <- I(min(decay$temperature$value,decay$max.temperature))
+       if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecay$new(temp)
+  else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecay$new(temp)
+  else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecay$new(temp,I(decay$max.distance))
 }
 
 .decayFactory <- function(decay) {
+  temp <- I(min(decay$temperature$value,decay$max.temperature))
   if ( decay$temperature$fixed ) {
-         if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(I(decay$temperature$value))
-    else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(I(decay$temperature$value))
-    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(I(decay$max.distance))$factory(I(decay$temperature$value))
+         if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(temp)
+    else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(temp)
+    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(I(decay$max.distance))$factory(temp)
   } else {
          if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(I(decay$temperature$shape),I(decay$temperature$rate),.rdg())
     else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(I(decay$temperature$shape),I(decay$temperature$rate),.rdg())
@@ -317,13 +313,10 @@ attraction <- function(distance, permutation, decay) {
   result
 }
 
-
-# Not exported:  Distance wrapper
 .distance <- function(distance) {
   s$.parameter.Distance$apply(as.matrix(distance),I(FALSE))
 }
 
-# Not exported:  Attraction wrapper
 .attraction <- function(attraction) {
   if ( attraction$constant ) {
     s$.distribution.Attraction$constant(I(attraction$n.items))
@@ -498,7 +491,7 @@ random.q <- function(x,n.samples) {
   mass <- .massFactory(x$mass)
   n.items <- I(x$n.items)
   if ( inherits(x,"shallot.distribution.ewens") ) {
-    s$.distribution.Ewens()$sampleNumberOfSubsets(n.items,mass,n.samples)
+    s$.distribution.Ewens$sampleNumberOfSubsets(n.items,mass,n.samples)
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
     s$.distribution.EwensAttraction$sampleNumberOfSubsets(n.items,mass,n.samples)
   } else {
@@ -519,7 +512,7 @@ random.q <- function(x,n.samples) {
 probability.q <- function(x,n.subsets) {
   n.subsets <- I(as.integer(n.subsets))
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
-  if ( ! x$mass()$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
+  if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
   mass <- .mass(x$mass)
   n.items <- I(x$n.items)
   if ( inherits(x,"shallot.distribution.ewens") ) {
