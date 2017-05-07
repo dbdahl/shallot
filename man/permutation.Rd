@@ -32,4 +32,4 @@ permutation(c(3, 1, 2, 5, 4), fixed=FALSE)
 permutation(n.items=5, fixed=FALSE)
 }
 }
-
+% DBD: 2017-05-02
