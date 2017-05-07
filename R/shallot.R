@@ -484,7 +484,7 @@ print.shallot.distribution.ddcrp <- function(x, ...) {
 
 
 # Distribution of the number of subsets
-random.q <- function(x,n.samples) {
+nsubsets.random <- function(x,n.samples) {
   n.samples <- I(as.integer(n.samples))
   if ( n.samples < 0 ) stop("'n.samples' must be positive.")
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
@@ -504,12 +504,12 @@ random.q <- function(x,n.samples) {
   }
 }
 
-# random.q(ewens.pitman.attraction(mass(fixed=FALSE),discount(fixed=FALSE),a),1000)
+# nsubsets.random(ewens.pitman.attraction(mass(fixed=FALSE),discount(fixed=FALSE),a),1000)
 
 
 
 # Probability of the number of subsets
-probability.q <- function(x,n.subsets) {
+nsubsets.probability <- function(x,n.subsets) {
   n.subsets <- I(as.integer(n.subsets))
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
@@ -530,12 +530,12 @@ probability.q <- function(x,n.subsets) {
   }
 }
 
-# probability.q(ewens.pitman.attraction(mass(n.items=a$n.items,fixed=TRUE),discount(0.1,fixed=TRUE),a),4)
+# nsubsets.probability(ewens.pitman.attraction(mass(n.items=a$n.items,fixed=TRUE),discount(0.1,fixed=TRUE),a),4)
 
 
 
 # Expected number of subsets
-average.q <- function(x) {
+nsubsets.average <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
   mass <- .mass(x$mass)
@@ -555,12 +555,12 @@ average.q <- function(x) {
   }
 }
 
-# average.q(ewens.pitman.attraction(mass(2,fixed=TRUE),discount(0.1,fixed=TRUE),a))
+# nsubsets.average(ewens.pitman.attraction(mass(2,fixed=TRUE),discount(0.1,fixed=TRUE),a))
 
 
 
 # Variance of the number of subsets
-variance.q <- function(x) {
+nsubsets.variance <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
   mass <- .mass(x$mass)
@@ -580,7 +580,7 @@ variance.q <- function(x) {
   }
 }
 
-# variance.q(ewens.attraction(mass(2,fixed=TRUE),a))
+# nsubsets.variance(ewens.attraction(mass(2,fixed=TRUE),a))
 
 
 

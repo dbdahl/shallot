@@ -11,7 +11,7 @@ Functions setting mass, discount, and temperature parameters and, in the case of
 \usage{
 mass(..., fixed = TRUE)
 discount(..., fixed = TRUE)
-temperature(..., fixed = TRUE, max.temperature = Inf)
+temperature(..., fixed = TRUE)
 \method{print}{shallot.mass}(x, ...)
 \method{print}{shallot.discount}(x, ...)
 \method{print}{shallot.temperature}(x, ...)

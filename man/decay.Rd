@@ -1,6 +1,5 @@
 \name{decay}
 \alias{decay}
-\alias{print.shallot.temperature}
 \alias{decay.reciprocal}
 \alias{decay.exponential}
 \alias{decay.subtraction}
@@ -9,10 +8,9 @@
 \description{
   Function storing the selected decay method at the given temperature for future use.}
 \usage{
-\method{print}{shallot.temperature}(x, ...)
-decay.reciprocal(..., fixed = TRUE, distance = NULL)
-decay.exponential(..., fixed = TRUE, distance = NULL)
-decay.subtraction(..., multiplier = 1.01, fixed = TRUE, distance = NULL)
+decay.reciprocal(..., distance, fixed = TRUE)
+decay.exponential(..., distance, fixed = TRUE)
+decay.subtraction(..., distance, multiplier = 1.01, fixed = TRUE)
 \method{print}{shallot.decay}(x, ...)
 }
 \arguments{
@@ -27,18 +25,9 @@ The shallot program is designed to determine how similar two alternate distribut
 
 The temperature variable has the Gamma distribution with default parameters shape of \code{2} and rate of \code{0.5}.  The default temperature is \code{3}.  The temperature function allows the user to establish either the temperature of the distribution or the shape and rate parameters of the Gamma distribution.  This function is an internal function only and cannot be used directly by the user.  The parameters are therefore established in the decay functions described below, and the temperature function is called internally.  It accepts as input either a single number intended for the temperature itself or a two-number vector containing the intended values for the shape and rate parameters of the Gamma function from which the temperature is to be sampled.  When the temperature is specified, the shape and rate parameters will remain at their default values, and vice-versa.  When no numbers are specified, all three internal variables will remain at their default values.  When a numeric vector is specified, \var{fixed} is required to be \code{FALSE}.
 
-The \code{\link{print.shallot.temperature}} function is an internal function that simply prints a concise output similar to that of the \code{\link{mass}} and \code{\link{discount}} functions.
-
 The decay functions, having called the temperature function internally to establish the parameters, then indicate how the distribution tails are to decay.  The three choices are exponential, subtraction, and reciprocal.  The temperature indicates by how much they are to decay.  The three decay functions simply accept the given input values of the temperature/parameters and whether the temperature is fixed or not.  Each function then passes these values on to the \code{decay.generic} function, along with specifying the values for the multiplier and the decay type (\dQuote{reciprocal},\dQuote{exponential}, or \dQuote{subtraction}).
 
 The \code{decay.generic} function takes the above inputs, lists them, and calls the temperature function described above to process the temperature prior to listing.
-
-The \code{\link{print.shallot.decay}} function is an internal function similar to the \code{\link{print.shallot.temperature}} function.
-}
-\value{
-The temperature function returns a data frame of class \code{shallot.temperature} containing the values of the temperature, shape, and rate, and also whether the permutation is fixed and some internal commands referencing the jobs to be called.
-
-The \code{decay.generic} function returns a data frame of class \code{shallot.decay} containing the \code{shallot.temperature} output, along with the type and the \var{multiplier}.
 }
 \note{
 When each decay function is written out with all of its arguments, it is coded internally as in the following example:

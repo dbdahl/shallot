@@ -8,6 +8,8 @@
 \alias{print.shallot.distribution.ewensAttraction}
 \alias{ewens.pitman.attraction}
 \alias{print.shallot.distribution.ewensPitmanAttraction}
+\alias{ddcrp}
+\alias{print.shallot.distribution.ddcrp}
 \title{Distribution}
 \description{
   Functions handling the selection of the distribution method to be used.}
@@ -20,6 +22,8 @@ ewens.attraction(mass, attraction)
 \method{print}{shallot.distribution.ewensAttraction}(x, ...)
 ewens.pitman.attraction(mass, discount, attraction)
 \method{print}{shallot.distribution.ewensPitmanAttraction}(x, ...)
+ddcrp(mass, attraction)
+\method{print}{shallot.distribution.ddcrp}(x, ...)
 }
 \arguments{
 \item{mass}{An object of class \code{shallot.mass}.  Please see instructions for the \code{\link{mass}} function.}
