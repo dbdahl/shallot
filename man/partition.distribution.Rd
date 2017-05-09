@@ -1,0 +1,48 @@
+\name{partition.distribution}
+\alias{partition.distribution}
+\alias{ewens}
+\alias{print.shallot.distribution.ewens}
+\alias{ewens.pitman}
+\alias{print.shallot.distribution.ewensPitman}
+\alias{ewens.attraction}
+\alias{print.shallot.distribution.ewensAttraction}
+\alias{ewens.pitman.attraction}
+\alias{print.shallot.distribution.ewensPitmanAttraction}
+\alias{ddcrp}
+\alias{print.shallot.distribution.ddcrp}
+\title{Distribution}
+\description{
+  These functions specify the Ewens, Ewens Pitman, Ewens Attraction, Ewens Pitman Attraction, and ddCRP distributions which would then be used in the \code{\link{sample.partition} function.}
+}
+\usage{
+ewens(mass,n.items,names = paste0("c", 1:n.items))
+\method{print}{shallot.distribution.ewens}(x, ...)
+ewens.pitman(mass,discount,n.items,names = paste0("c", 1:n.items))
+\method{print}{shallot.distribution.ewensPitman}(x, ...)
+ewens.attraction(mass, attraction)
+\method{print}{shallot.distribution.ewensAttraction}(x, ...)
+ewens.pitman.attraction(mass, discount, attraction)
+\method{print}{shallot.distribution.ewensPitmanAttraction}(x, ...)
+ddcrp(mass, attraction)
+\method{print}{shallot.distribution.ddcrp}(x, ...)
+}
+\arguments{
+\item{mass}{An object of class \code{shallot.mass}.}
+\item{discount}{An object of class \code{shallot.discount}.}
+\item{attraction}{An object of class \code{shallot.attraction}.}
+\item{n.items}{An integer containing the number of items to partition.}
+\item{names}{An character vector containing the names of the items.  The default names are of the form \dQuote{c1}, \dQuote{c2}, etc.}
+\item{x}{An object of class \code{shallot.distribution}.}
+\item{...}{Currently ignored.}
+}
+\value{
+An object of class \code{shallot.distribution}.
+}
+\author{David B. Dahl \email{dahl@stat.byu.edu}}
+\seealso{
+\code{\link{mass}}
+\code{\link{discount}}
+\code{\link{attraction}}
+\code{\link{sample.partition}}
+}
+% DBD: 2017-05-09

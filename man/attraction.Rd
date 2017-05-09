@@ -4,7 +4,7 @@
 \alias{as.matrix.shallot.attraction}
 \title{Attraction}
 \description{
-This function creates an attraction from a permutation and a decay in preparation for use in the \code{\link{ewens.pitman.attraction}} and \code{\link{ddcrp}} functions.
+This function creates an attraction from a permutation and a decay in preparation for use in the \code{\link{ewens.attraction}}, \code{\link{ewens.pitman.attraction}}, and \code{\link{ddcrp}} functions.
 For details on each of these arguments, please see the links below.
 }
 \usage{
@@ -23,7 +23,10 @@ An object of class \code{shallot.attraction}.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
+\code{\link{ddcrp}}}
 \code{\link{decay}}
+\code{\link{ewens.attraction}}
+\code{\link{ewens.pitman.attraction}}
 \code{\link{permutation}}
 }
 % DBD: 2017-05-09
