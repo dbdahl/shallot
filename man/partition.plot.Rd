@@ -1,5 +1,5 @@
-\name{plotting}
-\alias{plotting}
+\name{plot.partition}
+\alias{plot.partition}
 \alias{pairwise.probabilities}
 \alias{print.shallot.pairwiseProbability}
 \alias{as.matrix.shallot.pairwiseProbability}

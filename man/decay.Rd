@@ -35,4 +35,7 @@ The subtract decay maps a distance \code{d} to an attraction \code{a} as follows
 \code{\link{temperature}}
 \code{\link{attraction}}
 }
+\references{
+Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+}
 % DBD: 2017-05-09

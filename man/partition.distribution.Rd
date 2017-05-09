@@ -45,4 +45,7 @@ An object of class \code{shallot.distribution}.
 \code{\link{attraction}}
 \code{\link{sample.partition}}
 }
+\references{
+Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+}
 % DBD: 2017-05-09

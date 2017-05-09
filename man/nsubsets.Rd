@@ -34,6 +34,9 @@ The \code{\link{nsubsets.random}} function returns an array of integers represen
 \seealso{
 \code{\link{distribution}}
 }
+\references{
+Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+}
 \examples{
 \dontrun{
 ## Load example dataset.

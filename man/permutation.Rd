@@ -24,6 +24,9 @@ An object of class \code{shallot.permutation}.
 \seealso{
 \code{\link{attraction}}
 }
+\references{
+Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+}
 \examples{
 \dontrun{
 ## Demonstrate permutation.
