@@ -2,7 +2,7 @@
 \alias{process.partition}
 \title{Process Sampled Partitions}
 \description{
-  This function extracts the partitions from the results of the \code{\link{sample.partition} function.}
+This function extracts the partitions from the results of the \code{\link{sample.partition} function.}
 }
 \usage{
 process.partition(x, sample.parameter = NULL, as.matrix = FALSE)
@@ -26,7 +26,6 @@ contains sampled model parameters if \code{sample.parameter} is not
 \code{\link{sample.partition}}
 }
 \examples{
-\dontrun{
 ## Demonstrate process.
 data <- iris[,-ncol(iris)]
 truth <- as.integer(iris[,ncol(iris)])
@@ -50,5 +49,4 @@ plot(conf)
 plot(conf,data=data)
 adj.rand.index(est,truth)
 }
-}
-
+% DBD: 2017-05-09

@@ -690,8 +690,7 @@ print.shallot.pairwiseProbability <- function(x, ...) {
 }
 
 as.matrix.shallot.pairwiseProbability <- function(x, ...) {
-  y <- x$ref$toArray()
-  structure(y, dimnames=list(x$names,x$names))
+  structure(x$ref$toArray(), dimnames=list(x$names,x$names))
 }
 
 
