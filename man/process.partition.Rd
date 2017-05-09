@@ -32,11 +32,12 @@ data <- iris[,-ncol(iris)]
 truth <- as.integer(iris[,ncol(iris)])
 distance <- as.dist(as.matrix(dist(scale(data))+0.001))
 
-decay <- decay.exponential(9.0, fixed = TRUE)
-attract <- attraction(distance, permutation(n.items = nrow(data), fixed = FALSE), decay)
+decay <- decay.exponential(temperature(9.0, fixed=TRUE), distance)
+permutation <- permutation(n.items=nrow(data), fixed = FALSE)
+attraction <- attraction(permutation, decay)
 mass <- mass(1.0, fixed = TRUE)
 discount <- discount(0.2, fixed = TRUE)
-distribution <- ewens.pitman.attraction(mass, discount, attract)
+distribution <- ewens.pitman.attraction(mass, discount, attraction)
 
 samples.raw <- sample.partition(distribution, 500)
 samples <- process.partition(samples.raw,as.matrix=TRUE)

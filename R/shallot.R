@@ -24,7 +24,9 @@ adj.rand.index <- function(c1,c2) {
 }
 
 # adj.rand.index(c(1,1,1,2,2,2,3,3,3),c(1,1,1,1,1,1,2,2,2))
- 
+
+
+#### To be added: "variation of information" by Meila (2007).
 
 
 # Mass
@@ -136,6 +138,7 @@ permutation <- function(...,n.items=NULL,fixed=TRUE) {
     x <- sample(1:n.items)
   } else {
     if ( is.null(n.items) ) n.items <- length(x)
+    n.items <- as.integer(n.items[1])
     if ( n.items != length(x) ) stop("'n.items' is not equal to the length of the permutation.")
     if ( length(unique(x)) != n.items ) stop("A permutation cannot have repeated values.")
     if ( min(x) < 1 ) stop("The smallest value in a permutation should be 1.")
@@ -154,7 +157,7 @@ permutation <- function(...,n.items=NULL,fixed=TRUE) {
   if ( permutation$fixed ) {
     s$.parameter.Permutation$factory(permutation$value-1L)
   } else {
-    s$.parameter.Permutation$factory(permutation$n.items,.rdg())
+    s$.parameter.Permutation$factory(I(permutation$n.items),.rdg())
   }
 }
 
@@ -211,8 +214,7 @@ print.shallot.temperature <- function(x, ...) {
 
 
 # Decay functions
-decay.reciprocal <- function(...,distance,fixed=TRUE) {
-  fixed <- as.logical(fixed)
+decay.reciprocal <- function(temperature,distance) {
   if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
   x1 <- -log(.Machine$double.xmin)/log(max(distance))
   x2 <- -(log(.Machine$double.xmax)-log(attr(distance,"Size")))/log(min(distance))
@@ -220,11 +222,10 @@ decay.reciprocal <- function(...,distance,fixed=TRUE) {
   if ( x1 > 0 ) x <- min(x,x1)
   if ( x2 > 0 ) x <- min(x,x2)
   max.temperature <- x
-  decay.generic(...,type="reciprocal",fixed=fixed,max.temperature=max.temperature)
+  decay.generic(temperature,distance,type="reciprocal",max.temperature=max.temperature)
 }
 
-decay.exponential <- function(...,distance,fixed=TRUE) {
-  fixed <- as.logical(fixed)
+decay.exponential <- function(temperature,distance) {
   if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
   x1 <- -log(.Machine$double.xmin)/max(distance)
   x2 <- -(log(.Machine$double.xmax)-log(attr(distance,"Size")))/min(distance)
@@ -232,12 +233,12 @@ decay.exponential <- function(...,distance,fixed=TRUE) {
   if ( x1 > 0 ) x <- min(x,x1)
   if ( x2 > 0 ) x <- min(x,x2)
   max.temperature <- x
-  decay.generic(...,type="exponential",fixed=fixed,max.temperature=max.temperature)
+  decay.generic(temperature,distance,type="exponential",max.temperature=max.temperature)
 }
 
-decay.subtraction <- function(...,distance,multiplier=1.01,fixed=TRUE) {
-  fixed <- as.logical(fixed)
+decay.subtraction <- function(temperature,distance,multiplier=1.01) {
   if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
+  if ( ( length(multiplier) != 1 ) || ( ! is.numeric(multiplier) ) || ( multiplier <= 1.0 ) ) stop("'multiplier' must be a scalar greater than 1.")
   max <- max(distance)
   min <- min(distance)
   max.dist <- multiplier*max
@@ -249,11 +250,11 @@ decay.subtraction <- function(...,distance,multiplier=1.01,fixed=TRUE) {
   if ( x1 > 0 ) x <- min(x,x1)
   if ( x2 > 0 ) x <- min(x,x2)
   max.temperature <- x
-  decay.generic(...,type="subtraction",max.distance=max.dist,fixed=fixed,max.temperature=max.temperature)
+  decay.generic(temperature,distance,type="subtraction",max.temperature=max.temperature,max.distance=max.dist)
 }
 
-decay.generic <- function(...,max.distance=NULL,type,fixed,max.temperature) {
-  result <- list(type=type,max.distance=max.distance,temperature=temperature(...,fixed=fixed),max.temperature=max.temperature)
+decay.generic <- function(temperature,distance,type,max.temperature,max.distance=NULL) {
+  result <- list(temperature=temperature,distance=distance,type=type,max.temperature=max.temperature,max.distance=max.distance)
   class(result) <- "shallot.decay"
   result
 }
@@ -266,15 +267,17 @@ decay.generic <- function(...,max.distance=NULL,type,fixed,max.temperature) {
 }
 
 .decayFactory <- function(decay) {
-  temp <- I(min(decay$temperature$value,decay$max.temperature))
   if ( decay$temperature$fixed ) {
+    temp <- I(min(decay$temperature$value,decay$max.temperature))
          if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(temp)
     else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(temp)
     else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(I(decay$max.distance))$factory(temp)
   } else {
-         if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(I(decay$temperature$shape),I(decay$temperature$rate),.rdg())
-    else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(I(decay$temperature$shape),I(decay$temperature$rate),.rdg())
-    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(I(decay$max.distance))$factory(I(decay$temperature$shape),I(decay$temperature$rate),.rdg())
+    shape <- I(decay$temperature$shape)
+    rate <- I(decay$temperature$rate)
+         if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(shape,rate,.rdg())
+    else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(shape,rate,.rdg())
+    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(I(decay$max.distance))$factory(shape,rate,.rdg())
   }
 }
 
@@ -300,14 +303,13 @@ print.shallot.decay <- function(x, ...) {
 
 
 # Attraction
-attraction <- function(distance, permutation, decay) {
-  if ( ( is.vector(distance) ) && ( length(distance) == 1 ) ) {
-    result <- list(constant=TRUE,n.items=as.integer(distance))
+attraction <- function(permutation, decay) {
+  if ( ( is.vector(decay) ) && ( length(decay) == 1 ) ) {
+    result <- list(constant=TRUE,n.items=as.integer(decay))
   } else {
-    if ( ! inherits(distance,"dist") ) stop("'distance' must be of class 'dist'")
     if ( ! inherits(permutation,"shallot.permutation") ) stop("'permutation' must be of class 'shallot.permutation'")
     if ( ! inherits(decay,"shallot.decay") ) stop("'decay' must be of class 'shallot.decay'")
-    result <- list(constant=FALSE,n.items=as.integer(attr(distance,"Size")), distance=distance, permutation=permutation, decay=decay, names=attr(distance,"Labels"))
+    result <- list(constant=FALSE,n.items=permutation$n.items, permutation=permutation, decay=decay, names=attr(decay$distance,"Labels"))
   }
   class(result) <- "shallot.attraction"
   result
@@ -322,7 +324,7 @@ attraction <- function(distance, permutation, decay) {
     s$.distribution.Attraction$constant(I(attraction$n.items))
   } else {
     tryCatch(
-      s$.distribution.Attraction$apply(.distance(as.matrix(attraction$distance)),.permutation(attraction$permutation),.decay(attraction$decay))
+      s$.distribution.Attraction$apply(.distance(as.matrix(attraction$decay$distance)),.permutation(attraction$permutation),.decay(attraction$decay))
     ,error = function(e) stop("Attraction is invalid because 'distance' and 'decay' appear to be incompatible.  Perhaps lower the 'temperature'."))
   }
 }
@@ -332,19 +334,19 @@ attraction <- function(distance, permutation, decay) {
     s$.distribution.Attraction$factory(I(attraction$n.items))
   } else if ( attraction$permutation$fixed && attraction$decay$temperature$fixed ) {
     tryCatch(
-      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$distance)),.permutation(attraction$permutation),.decay(attraction$decay))
+      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$decay$distance)),.permutation(attraction$permutation),.decay(attraction$decay))
     ,error = function(e) stop("Attraction is invalid because 'distance' and 'decay' appear to be incompatible.  Perhaps lower the 'temperature'."))
   } else if ( attraction$permutation$fixed ) {
     tryCatch(
-      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$distance)),.permutation(attraction$permutation),.decayFactory(attraction$decay))
+      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$decay$distance)),.permutation(attraction$permutation),.decayFactory(attraction$decay))
     ,error = function(e) stop("Attraction is invalid because 'distance' and 'decay' appear to be incompatible.  Perhaps lower the 'temperature'."))
   } else if ( attraction$decay$temperature$fixed ) {
     tryCatch(
-      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$distance)),.permutationFactory(attraction$permutation),.decay(attraction$decay))
+      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$decay$distance)),.permutationFactory(attraction$permutation),.decay(attraction$decay))
     ,error = function(e) stop("Attraction is invalid because 'distance' and 'decay' appear to be incompatible.  Perhaps lower the 'temperature'."))
   } else {
     tryCatch(
-      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$distance)),.permutationFactory(attraction$permutation),.decayFactory(attraction$decay))
+      s$.distribution.Attraction$factory(.distance(as.matrix(attraction$decay$distance)),.permutationFactory(attraction$permutation),.decayFactory(attraction$decay))
     ,error = function(e) stop("Attraction is invalid because 'distance' and 'decay' appear to be incompatible.  Perhaps lower the 'temperature'."))
   }
 }
