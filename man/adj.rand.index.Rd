@@ -12,10 +12,10 @@ adj.rand.index(c1, c2)
 }
 \details{
 The \code{\link{adj.rand.index}} function takes as its input two clusterings/partitions in cluster label notation and computes the adjusted Rand index.
-The adjusted Rand index is at most \code{1.0} and larger number indicate high similarity.
+The adjusted Rand index is at most \code{1.0} and large numbers indicate high similarity.
 }
 \value{
-A numeric vector of length one representing the adjusted Rand index between the two clusterings/partition.
+A numeric vector of length one representing the adjusted Rand index between the two clusterings/partitions.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{

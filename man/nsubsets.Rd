@@ -5,7 +5,7 @@
 \alias{nsubsets.variance}
 \title{Number of Subsets}
 \description{
-Functions which either sample the number of subsets for supported partition distributions or computes probabilities, means, and variances of these distributions.
+These functions either sample the number of subsets for supported partition distributions or computes probabilities, means, and variances of these distributions.
 }
 \usage{
 nsubsets.random(x, n.samples)
@@ -17,14 +17,14 @@ nsubsets.variance(x)
 \item{x}{An object of class \code{shallot.distribution}.}
 \item{n.samples}{An integer containing the number of samples.}
 \item{n.subsets}{An integer containing the number of subsets.}
-\item{...}{An unused argument.}
+\item{...}{Currently ignored.}
 }
 \value{
 The \code{\link{nsubsets.random}} function returns a vector of random samples of the number of subsets in the distribution \var{x}.
 
-The \code{\link{nsubsets.probability}} function returns the probability that the number of subsets is \var{n.subsets} in the distribution \var{x}.  Depending on the number of items and the value of \var{n.subsets}, this function can computationally intensive.
+The \code{\link{nsubsets.probability}} function returns the probability that the number of subsets is \var{n.subsets} in the distribution \var{x}.  Depending on the number of items and the value of \var{n.subsets}, this function can be computationally intensive.
 
-The \code{\link{nsubsets.average}} and \code{\link{nsubsets.variance}} return the mean and variances of the number of subsets in the distribution \var{x}.
+The \code{\link{nsubsets.average}} and \code{\link{nsubsets.variance}} functions return the mean and variances, respectively, of the number of subsets in the distribution \var{x}.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{

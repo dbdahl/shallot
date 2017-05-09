@@ -4,7 +4,7 @@
 \alias{as.matrix.shallot.pairwiseProbability}
 \title{Pairwise Probabilities}
 \description{
-These functions relate to the pairwise probabilities that two items are clustered together, e.g., belong to the same subset in a partition.
+These functions relate to the pairwise probabilities that two items are clustered together, i.e., belong to the same subset in a partition.
 }
 \usage{
 pairwise.probabilities(x, parallel = TRUE)
@@ -17,14 +17,14 @@ pairwise.probabilities(x, parallel = TRUE)
 \item{...}{Currently ignored.}
 }
 \details{
-\code{\link{pairwise.probabilities}} calculates the pairwise probabilities that two items are clustered together, e.g., belong to the same subset in a partition.
+\code{\link{pairwise.probabilities}} calculates the pairwise probabilities that two items are clustered together, i.e., belong to the same subset in a partition.
 
 \code{\link[=as.matrix.shallot.pairwiseProbability]{as.matrix}} converts the results of \code{\link{pairwise.probabilities}} to an \R matrix.
 }
 \value{
-\code{\link{pairwise.probabilities}} function returns an object of class \code{shallot.pairwiseProbability}.
+The \code{\link{pairwise.probabilities}} function returns an object of class \code{shallot.pairwiseProbability}.
 
-\code{\link[=as.matrix.shallot.pairwiseProbability]{as.matrix}} return a square matrix.
+The \code{\link[=as.matrix.shallot.pairwiseProbability]{as.matrix}} function returns a square matrix.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{

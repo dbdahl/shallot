@@ -16,7 +16,7 @@ attraction(permutation, decay)
 \item{permutation}{An object of class \code{shallot.permutation} encoding the permutation of the items.}
 \item{decay}{An object of class \code{shallot.decay} detailing the transformation from distances to attractions.}
 \item{x}{An object of class \code{shallot.attraction}.}
-\item{...}{Additional arguments (that are currently ignored).}
+\item{...}{Currently ignored.}
 }
 \value{
 An object of class \code{shallot.attraction}.  

@@ -7,7 +7,7 @@
 \alias{print.shallot.temperature}
 \title{Mass, Discount, and Temperature Parameters}
 \description{
-Functions setting mass, discount, and temperature parameters and, in the case of them being random, specifying the parameters of their distribution.}
+These functions set the mass, discount, and temperature parameters and, in the case of them being random, specify the parameters of their distribution.}
 \usage{
 mass(..., fixed = TRUE)
 discount(..., fixed = TRUE)

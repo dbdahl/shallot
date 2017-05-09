@@ -6,7 +6,7 @@
 \alias{print.shallot.decay}
 \title{Decay}
 \description{
-  Functions to specify the decay function to map distances to attractions.}
+These functions specify the decay to map distances to attractions.}
 \usage{
 decay.reciprocal(temperature, distance)
 decay.exponential(temperature, distance)

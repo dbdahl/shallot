@@ -2,7 +2,7 @@
 \alias{estimate.partition}
 \title{Estimate Partition}
 \description{
-This function returns a partition that summarizes the partition distribution using the least-square clustering method (Dahl 2006), with extension to
+This function returns a partition that summarizes the partition distribution using the least-square clustering method (Dahl 2006), with extensions to
 perform greedy optimization and limit the number of subsets.}
 \usage{
 estimate.partition(x, pairwise.probabilities = NULL,
@@ -27,6 +27,8 @@ A partition as a vector of cluster labels.
 }
 \references{
 \href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.}
+
+Dahl, D. B. (2006), Model-Based Clustering for Expression Data via a Dirichlet Process Mixture Model, in \emph{Bayesian Inference for Gene Expression and Proteomics}, Kim-Anh Do, Peter Müller, Marina Vannucci (Eds.), Cambridge University Press.
 }
 \examples{
 \dontrun{

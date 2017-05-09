@@ -3,13 +3,13 @@
 \alias{print.shallot.permutation}
 \title{Permutation}
 \description{
-Function defining a permutation for subsequent use.}
+These function define a permutation for subsequent use.}
 \usage{
 permutation(..., n.items = NULL, fixed = TRUE)
 \method{print}{shallot.permutation}(x, ...)
 }
 \arguments{
-\item{...}{For the fuction \code{\link{permutation}}, a permutation of the integers \code{1}, \code{2},... \code{n}, where \code{n} is the length of the vector.  For the function \code{\link{print.shallot.permutation}}, this is ignored.}
+\item{...}{For the function \code{\link{permutation}}, a permutation of the integers \code{1}, \code{2},... \code{n}, where \code{n} is the length of the vector.  For the function \code{\link{print.shallot.permutation}}, this is ignored.}
 \item{n.items}{An optional argument provided instead of \code{...} to request a random partition.  The argument \code{fixed} must be \code{FALSE}.}
 \item{x}{An object of class \code{shallot.permutation}.}
 \item{fixed}{Should the permutation be fixed?}
