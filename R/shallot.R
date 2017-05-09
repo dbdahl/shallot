@@ -254,6 +254,7 @@ decay.subtraction <- function(temperature,distance,multiplier=1.01) {
 }
 
 decay.generic <- function(temperature,distance,type,max.temperature,max.distance=NULL) {
+  if ( ! inherits(temperature,"shallot.temperature") ) stop("'temperature' must be of class 'shallot.temperature'")
   result <- list(temperature=temperature,distance=distance,type=type,max.temperature=max.temperature,max.distance=max.distance)
   class(result) <- "shallot.decay"
   result
@@ -514,7 +515,7 @@ nsubsets.random <- function(x,n.samples) {
 nsubsets.probability <- function(x,n.subsets) {
   n.subsets <- I(as.integer(n.subsets))
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
-  if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
+  if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
   mass <- .mass(x$mass)
   n.items <- I(x$n.items)
   if ( inherits(x,"shallot.distribution.ewens") ) {
@@ -522,7 +523,7 @@ nsubsets.probability <- function(x,n.subsets) {
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
     s$.distribution.EwensAttraction$probabilityNumberOfSubsets(n.items,n.subsets,mass)
   } else {
-    if ( ! x$discount$fixed ) stop("'discount' must be fixed for this function, but emperical estimates are available through random.q function.")
+    if ( ! x$discount$fixed ) stop("'discount' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
     discount <- .discount(x$discount)
     if ( inherits(x,"shallot.distribution.ewensPitman") ) {
       s$.distribution.EwensPitman$probabilityNumberOfSubsets(n.items,n.subsets,mass,discount)
@@ -539,7 +540,7 @@ nsubsets.probability <- function(x,n.subsets) {
 # Expected number of subsets
 nsubsets.average <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
-  if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
+  if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
   mass <- .mass(x$mass)
   n.items <- I(x$n.items)
   if ( inherits(x,"shallot.distribution.ewens") ) {
@@ -547,7 +548,7 @@ nsubsets.average <- function(x) {
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
     s$.distribution.EwensAttraction$meanNumberOfSubsets(n.items,mass)
   } else {
-    if ( ! x$discount$fixed ) stop("'discount' must be fixed for this function, but emperical estimates are available through random.q function.")
+    if ( ! x$discount$fixed ) stop("'discount' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
     discount <- .discount(x$discount)
     if ( inherits(x,"shallot.distribution.ewensPitman") ) {
       s$.distribution.EwensPitman$meanNumberOfSubsets(n.items,mass,discount)
@@ -564,7 +565,7 @@ nsubsets.average <- function(x) {
 # Variance of the number of subsets
 nsubsets.variance <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
-  if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through random.q function.")
+  if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
   mass <- .mass(x$mass)
   n.items <- I(x$n.items)
   if ( inherits(x,"shallot.distribution.ewens") ) {
@@ -572,12 +573,12 @@ nsubsets.variance <- function(x) {
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
     s$.distribution.EwensAttraction$varianceNumberOfSubsets(n.items,mass)
   } else {
-    if ( ! x$discount$fixed ) stop("'discount' must be fixed, but emperical estimates are available through random.q function.")
+    if ( ! x$discount$fixed ) stop("'discount' must be fixed, but emperical estimates are available through the 'nsubsets.random' function.")
     discount <- .discount(x$discount)
     if ( inherits(x,"shallot.distribution.ewensPitman") ) {
-      stop("Unsupported distribution, but emperical estimates are available through random.q function.")
+      stop("Unsupported distribution, but emperical estimates are available through the 'nsubsets.random' function.")
     } else if ( inherits(x,"shallot.distribution.ewensPitmanAttraction") ) {
-      stop("Unsupported distribution, but emperical estimates are available through random.q function.")
+      stop("Unsupported distribution, but emperical estimates are available through the 'nsubsets.random' function.")
     } else stop("Unrecognized distribution.")
   }
 }
