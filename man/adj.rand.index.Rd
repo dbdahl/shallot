@@ -25,7 +25,6 @@ A numeric vector of length one representing the adjusted Rand index between the 
 Hubert, L. and Arabie, P. (1985), Comparing partitions, \emph{Journal of Classification}, \bold{2}, 193-218.
 }
 \examples{
-## Load example dataset.
 truth    <- c(1,1,2,2,2,1,3,3,3)
 estimate <- c(1,2,2,2,2,1,2,3,3)
 adj.rand.index(truth,estimate)

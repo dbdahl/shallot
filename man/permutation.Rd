@@ -25,14 +25,12 @@ An object of class \code{shallot.permutation}.
 \code{\link{attraction}}
 }
 \references{
-Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+\href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.}
 }
 \examples{
-\dontrun{
 ## Demonstrate permutation.
 permutation(c(3, 1, 2, 5, 4))
 permutation(c(3, 1, 2, 5, 4), fixed=FALSE)
 permutation(n.items=5, fixed=FALSE)
-}
 }
 % DBD: 2017-05-02

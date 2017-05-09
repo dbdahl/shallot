@@ -12,7 +12,7 @@
 \alias{print.shallot.distribution.ddcrp}
 \title{Distribution}
 \description{
-  These functions specify the Ewens, Ewens Pitman, Ewens Attraction, Ewens Pitman Attraction, and ddCRP distributions which would then be used in the \code{\link{sample.partition} function.}
+  These functions specify the Ewens, Ewens-Pitman, Ewens attraction, Ewens-Pitman attraction, and ddCRP distributions which would then be used in the \code{\link{sample.partition} function.}
 }
 \usage{
 ewens(mass,n.items,names = paste0("c", 1:n.items))
@@ -40,12 +40,21 @@ An object of class \code{shallot.distribution}.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{mass}}
-\code{\link{discount}}
-\code{\link{attraction}}
+\code{\link{mass}},
+\code{\link{discount}},
+\code{\link{attraction}},
 \code{\link{sample.partition}}
 }
 \references{
-Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+\href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.}
+}
+\examples{
+pd1 <- ewens(mass(1),50)
+
+decay <- decay.exponential(temperature(1.0),dist(scale(USArrests)))
+attraction <- attraction(permutation(n.items=50,fixed=FALSE), decay)
+pd2 <- ewens.pitman.attraction(mass(1), discount(0.05), attraction)
+
+pd3 <- ddcrp(mass(1), attraction)
 }
 % DBD: 2017-05-09

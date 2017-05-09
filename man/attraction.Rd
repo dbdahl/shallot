@@ -23,13 +23,18 @@ An object of class \code{shallot.attraction}.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{ddcrp}}
-\code{\link{decay}}
-\code{\link{ewens.attraction}}
-\code{\link{ewens.pitman.attraction}}
+\code{\link{ddcrp}},
+\code{\link{decay}},
+\code{\link{ewens.attraction}},
+\code{\link{ewens.pitman.attraction}},
 \code{\link{permutation}}
 }
 \references{
-Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+\href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.}
+}
+\examples{
+permutation <- permutation(n.items=50,fixed=FALSE)
+decay <- decay.exponential(temperature(1.0),dist(scale(USArrests)))
+attraction(permutation, decay)
 }
 % DBD: 2017-05-09

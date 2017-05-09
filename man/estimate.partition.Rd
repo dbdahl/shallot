@@ -20,12 +20,17 @@ A partition as a vector of cluster labels.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{process.partition}}
-\code{\link{sample.partition}}
-\code{\link{plot.partition}}
+\code{\link{process.partition}},
+\code{\link{sample.partition}},
+\code{\link{plot.partition}},
 \code{\link{adj.rand.index}}
 }
 \references{
-D. B. Dahl (2006), \emph{Model-Based Clustering for Expression Data via a Dirichlet Process Mixture Model}, in Bayesian Inference for Gene Expression and Proteomics, Kim-Anh Do, Peter Mueller, Marina Vannucci (Eds.), Cambridge University Press.
+\href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.}
+}
+\examples{
+\dontrun{
+example(shallot)
+}
 }
 % DBD: 2017-05-09

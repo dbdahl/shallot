@@ -28,8 +28,13 @@ pairwise.probabilities(x, parallel = TRUE)
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{sample.partition}}
-\code{\link{process.partition}}
+\code{\link{sample.partition}},
+\code{\link{process.partition}},
 \code{\link{estimate.partition}}
+}
+\examples{
+\dontrun{
+example(shallot)
+}
 }
 % DBD: 2017-05-09

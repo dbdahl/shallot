@@ -31,11 +31,18 @@ The subtract decay maps a distance \code{d} to an attraction \code{a} as follows
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link[stats]{dist}}
-\code{\link{temperature}}
+\code{\link[stats]{dist}},
+\code{\link{temperature}},
 \code{\link{attraction}}
 }
 \references{
-Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+\href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.}
+}
+\examples{
+temp <- temperature(1.0)
+distance <- dist(scale(USArrests))
+decay1 <- decay.reciprocal(temp,distance)
+decay2 <- decay.exponential(temp,distance)
+decay3 <- decay.subtraction(temp,distance)
 }
 % DBD: 2017-05-09

@@ -26,27 +26,8 @@ contains sampled model parameters if \code{sample.parameter} is not
 \code{\link{sample.partition}}
 }
 \examples{
-## Demonstrate process.
-data <- iris[,-ncol(iris)]
-truth <- as.integer(iris[,ncol(iris)])
-distance <- as.dist(as.matrix(dist(scale(data))+0.001))
-
-decay <- decay.exponential(temperature(9.0, fixed=TRUE), distance)
-permutation <- permutation(n.items=nrow(data), fixed = FALSE)
-attraction <- attraction(permutation, decay)
-mass <- mass(1.0, fixed = TRUE)
-discount <- discount(0.2, fixed = TRUE)
-distribution <- ewens.pitman.attraction(mass, discount, attraction)
-
-samples.raw <- sample.partition(distribution, 500)
-samples <- process.partition(samples.raw,as.matrix=TRUE)
-
-est <- estimate.partition(samples.raw,max.subsets=3,max.scans=0)
-pp <- pairwise.probabilities(samples.raw)
-
-conf <- confidence(pp,est)
-plot(conf)
-plot(conf,data=data)
-adj.rand.index(est,truth)
+\dontrun{
+example(shallot)
+}
 }
 % DBD: 2017-05-09

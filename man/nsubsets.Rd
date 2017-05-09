@@ -31,9 +31,10 @@ The \code{\link{nsubsets.average}} and \code{\link{nsubsets.variance}} return th
 \code{\link{partition.distribution}}
 }
 \references{
-Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.
+\href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B., Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by Pairwise Information, \emph{Journal of the American Statistical Association}, accepted.}
 }
 \examples{
+\dontrun{
 pd <- ewens.pitman.attraction(
         mass(1),
         discount(0.05),
@@ -45,5 +46,6 @@ nsubsets.average(pd)
 pde <- ewens(mass(1),50)
 nsubsets.variance(pde)
 nsubsets.probability(pde,4)
+}
 }
 % DBD: 2017-05-09

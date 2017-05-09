@@ -3,7 +3,7 @@
 \alias{print.shallot.samples.raw}
 \title{Sample Partitions from Partition Distributions}
 \description{
-These function sample partitions from the Ewens, Ewens Pitman, Ewens Attraction, Ewens Pitman Attraction, and ddCRP distributions.
+These function sample partitions from the Ewens, Ewens-Pitman, Ewens attraction, Ewens-Pitman attraction, and ddCRP distributions.
 }
 \usage{
 sample.partition(x, n.draws, parallel = TRUE)
@@ -23,9 +23,14 @@ If this function is interrupted by the user, the computation engine will be brok
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{partition.distribution}}
-\code{\link{process.partition}}
-\code{\link{pairwise.probabilities}}
+\code{\link{partition.distribution}},
+\code{\link{process.partition}},
+\code{\link{pairwise.probabilities}},
 \code{\link{estimate.partition}}
+}
+\examples{
+\dontrun{
+example(shallot)
+}
 }
 % DBD: 2017-05-09
