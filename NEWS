@@ -1,3 +1,6 @@
+0.3.2 (2017-05-12)
+  * Circumvent a weird bug in the class loader of Scala 2.11.x. 
+
 0.3.1 (2017-05-11)
   * Initial release to CRAN.
 

@@ -11,8 +11,13 @@
       r
     }
   '
-  .rscalaPackage(pkgname,snippet=snippet)   ## Tell uses to set heap.maximum using options("rscala.command.line.options"="-J-Xmx4g")
-#  s$do("org.apache.commons.math3.random.EmpiricalDistribution")$new()  ## This circumvents a weird bug in Scala's class loader.
+  ## Tell users to set heap.maximum using options("rscala.command.line.options"="-J-Xmx4g")
+  .rscalaPackage(pkgname,snippet=snippet)
+  ## This circumvents a weird bug in the class loader of Scala 2.11.x.
+  sInfo <- scalaInfo()
+  if ( ( ! is.null(sInfo) ) && ( sInfo$major.version == "2.11" ) ) {
+    shallot:::s$.org.apache.commons.math3.random.EmpiricalDistribution$new()
+  }
 #  s[['env']]$mapper.nSubsets     <- s %.~% '(p: org.ddahl.shallot.parameter.partition.Partition[org.ddahl.shallot.REXP]) => p.nSubsets' 
 #  s[['env']]$mapper.entropy      <- s %.~% '(p: org.ddahl.shallot.parameter.partition.Partition[org.ddahl.shallot.REXP]) => p.entropy'
 #  s[['env']]$mapper.mass         <- s %.~% '(p: org.ddahl.shallot.AugmentedSample) => p._2'
