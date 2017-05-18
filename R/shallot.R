@@ -157,7 +157,7 @@ permutation <- function(...,n.items=NULL,fixed=TRUE) {
   if ( permutation$fixed ) {
     s$.parameter.Permutation$factory(permutation$value-1L)
   } else {
-    s$.parameter.Permutation$factory(I(permutation$n.items),.rdg())
+    s$.parameter.Permutation$factory(permutation$n.items,.rdg())
   }
 }
 
@@ -261,24 +261,24 @@ decay.generic <- function(temperature,distance,type,max.temperature,max.distance
 }
 
 .decay <- function(decay) {
-  temp <- I(min(decay$temperature$value,decay$max.temperature))
+  temp <- min(decay$temperature$value,decay$max.temperature)
        if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecay$new(temp)
   else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecay$new(temp)
-  else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecay$new(temp,I(decay$max.distance))
+  else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecay$new(temp,decay$max.distance)
 }
 
 .decayFactory <- function(decay) {
   if ( decay$temperature$fixed ) {
-    temp <- I(min(decay$temperature$value,decay$max.temperature))
+    temp <- min(decay$temperature$value,decay$max.temperature)
          if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(temp)
     else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(temp)
-    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(I(decay$max.distance))$factory(temp)
+    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(decay$max.distance)$factory(temp)
   } else {
-    shape <- I(decay$temperature$shape)
-    rate <- I(decay$temperature$rate)
+    shape <- decay$temperature$shape
+    rate <- decay$temperature$rate
          if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(shape,rate,.rdg())
     else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(shape,rate,.rdg())
-    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(I(decay$max.distance))$factory(shape,rate,.rdg())
+    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(decay$max.distance)$factory(shape,rate,.rdg())
   }
 }
 
@@ -305,8 +305,8 @@ print.shallot.decay <- function(x, ...) {
 
 # Attraction
 attraction <- function(permutation, decay) {
-  if ( ( is.vector(decay) ) && ( length(decay) == 1 ) ) {
-    result <- list(constant=TRUE,n.items=as.integer(decay))
+  if ( ( is.vector(permutation) ) && ( length(permutation) == 1 ) && ( missing(decay) ) ) {
+    result <- list(constant=TRUE,n.items=as.integer(permutation))
   } else {
     if ( ! inherits(permutation,"shallot.permutation") ) stop("'permutation' must be of class 'shallot.permutation'")
     if ( ! inherits(decay,"shallot.decay") ) stop("'decay' must be of class 'shallot.decay'")
@@ -317,12 +317,12 @@ attraction <- function(permutation, decay) {
 }
 
 .distance <- function(distance) {
-  s$.parameter.Distance$apply(as.matrix(distance),I(FALSE))
+  s$.parameter.Distance$apply(as.matrix(distance),FALSE)
 }
 
 .attraction <- function(attraction) {
   if ( attraction$constant ) {
-    s$.distribution.Attraction$constant(I(attraction$n.items))
+    s$.distribution.Attraction$constant(attraction$n.items)
   } else {
     tryCatch(
       s$.distribution.Attraction$apply(.distance(as.matrix(attraction$decay$distance)),.permutation(attraction$permutation),.decay(attraction$decay))
@@ -332,7 +332,7 @@ attraction <- function(permutation, decay) {
 
 .attractionFactory <- function(attraction) {
   if ( attraction$constant ) {
-    s$.distribution.Attraction$factory(I(attraction$n.items))
+    s$.distribution.Attraction$factory(attraction$n.items)
   } else if ( attraction$permutation$fixed && attraction$decay$temperature$fixed ) {
     tryCatch(
       s$.distribution.Attraction$factory(.distance(as.matrix(attraction$decay$distance)),.permutation(attraction$permutation),.decay(attraction$decay))
@@ -488,11 +488,11 @@ print.shallot.distribution.ddcrp <- function(x, ...) {
 
 # Distribution of the number of subsets
 nsubsets.random <- function(x,n.samples) {
-  n.samples <- I(as.integer(n.samples))
+  n.samples <- as.integer(n.samples)
   if ( n.samples < 0 ) stop("'n.samples' must be positive.")
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   mass <- .massFactory(x$mass)
-  n.items <- I(x$n.items)
+  n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
     s$.distribution.Ewens$sampleNumberOfSubsets(n.items,mass,n.samples)
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
@@ -513,11 +513,11 @@ nsubsets.random <- function(x,n.samples) {
 
 # Probability of the number of subsets
 nsubsets.probability <- function(x,n.subsets) {
-  n.subsets <- I(as.integer(n.subsets))
+  n.subsets <- as.integer(n.subsets)
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
   mass <- .mass(x$mass)
-  n.items <- I(x$n.items)
+  n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
     s$.distribution.Ewens$probabilityNumberOfSubsets(n.items,n.subsets,mass)
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
@@ -542,7 +542,7 @@ nsubsets.average <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
   mass <- .mass(x$mass)
-  n.items <- I(x$n.items)
+  n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
     s$.distribution.Ewens$meanNumberOfSubsets(n.items,mass)
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
@@ -567,7 +567,7 @@ nsubsets.variance <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
   mass <- .mass(x$mass)
-  n.items <- I(x$n.items)
+  n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
     s$.distribution.Ewens$varianceNumberOfSubsets(n.items,mass)
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
@@ -588,25 +588,25 @@ nsubsets.variance <- function(x) {
 
 
 # Sample for partition distributions.
-.sample.ewens <- function(nItems=I(0L), massFactory=scalaNull('() => parameter.Mass')) s %.!% '
+.sample.ewens <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
   val partitionModelFactory = distribution.Ewens.factory(samplingModel,massFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.sample.ewensPitman <- function(nItems=I(0L), massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount')) s %.!% '
+.sample.ewensPitman <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
   val partitionModelFactory = distribution.EwensPitman.factory(samplingModel,massFactory,discountFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.sample.ewensAttraction <- function(nItems=I(0L), massFactory=scalaNull('() => parameter.Mass'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
+.sample.ewensAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
   val partitionModelFactory = distribution.EwensAttraction.factory(samplingModel,massFactory,attractionFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.sample.ewensPitmanAttraction <- function(nItems=I(0L), massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
+.sample.ewensPitmanAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
   val partitionModelFactory = distribution.EwensPitmanAttraction.factory(samplingModel,massFactory,discountFactory,attractionFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
@@ -616,7 +616,7 @@ nsubsets.variance <- function(x) {
   x.map(_.toLabels).toArray
 '
 
-.sampleForward <- function(nSamples=I(0L), rdg=scalaNull('RDG'), sampler=scalaNull('Function2[Int, RDG, List[parameter.partition.Partition[Null]]]'), parallel=I(TRUE)) s %.!% '
+.sampleForward <- function(nSamples=0L, rdg=scalaNull('RDG'), sampler=scalaNull('Function2[Int, RDG, List[parameter.partition.Partition[Null]]]'), parallel=TRUE) s %.!% '
   if (!parallel) sampler(nSamples, rdg)
   else {
     val nCores = Runtime.getRuntime.availableProcessors
@@ -680,7 +680,7 @@ process.partition <- function(x, sample.parameter=NULL, as.matrix=FALSE) {
 pairwise.probabilities <- function(x,parallel=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   start.time <- proc.time()
-  ref <- s$.org.ddahl.shallot.parameter.partition.PairwiseProbability$apply(x$ref,I(as.logical(parallel)))
+  ref <- s$.org.ddahl.shallot.parameter.partition.PairwiseProbability$apply(x$ref,as.logical(parallel))
   result <- list(ref=ref,n.items=ref$nItems(),names=x$names,proc.time=proc.time()-start.time)
   structure(result, class="shallot.pairwiseProbability")
 }
@@ -700,7 +700,7 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   if ( is.null(pairwise.probabilities) ) pairwise.probabilities <- pairwise.probabilities(x)
   ref <- s$.org.ddahl.shallot.parameter.partition.MinBinder$apply(
-      pairwise.probabilities$ref, x$ref, I(as.integer(max.subsets)), I(as.integer(max.scans)), I(as.logical(parallel)))
+      pairwise.probabilities$ref, x$ref, as.integer(max.subsets), as.integer(max.scans), as.logical(parallel))
   structure(ref$toLabels(), names=x$names)
 }
 
