@@ -1,4 +1,5 @@
 import(rscala)
+import(commonsMath)
 import(stats)
 
 importFrom("grDevices", "heat.colors", "rainbow", "topo.colors")

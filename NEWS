@@ -1,6 +1,9 @@
-0.3.2 (2017-05-16)
-  * Circumvent a weird bug in the class loader of Scala 2.11.x. 
-  * Moved Apache Commons Math JAR file into its own package.
+0.3.2 (2017-05-24)
+  * Spin down the Scala interpreter/compiler when the package is unloaded using
+    the .rscalaPackageUnload function.
+  * Removed Apache Commons Math JAR file and now get it from the
+    commonsMath package.
+  * Circumvent a weird bug in the class loader of Scala 2.11.x.
 
 0.3.1 (2017-05-11)
   * Initial release to CRAN.

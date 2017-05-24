@@ -57,4 +57,3 @@ pd2 <- ewens.pitman.attraction(mass(1), discount(0.05), attraction)
 
 pd3 <- ddcrp(mass(1), attraction)
 }
-% DBD: 2017-05-09

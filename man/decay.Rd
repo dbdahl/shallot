@@ -45,4 +45,3 @@ decay1 <- decay.reciprocal(temp,distance)
 decay2 <- decay.exponential(temp,distance)
 decay3 <- decay.subtraction(temp,distance)
 }
-% DBD: 2017-05-09

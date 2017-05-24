@@ -30,4 +30,3 @@ contains sampled model parameters if \code{sample.parameter} is not
 example(shallot)
 }
 }
-% DBD: 2017-05-09

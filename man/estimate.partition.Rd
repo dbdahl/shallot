@@ -35,4 +35,3 @@ Dahl, D. B. (2006), Model-Based Clustering for Expression Data via a Dirichlet P
 example(shallot)
 }
 }
-% DBD: 2017-05-09

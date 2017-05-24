@@ -37,4 +37,3 @@ permutation <- permutation(n.items=50,fixed=FALSE)
 decay <- decay.exponential(temperature(1.0),dist(scale(USArrests)))
 attraction(permutation, decay)
 }
-% DBD: 2017-05-09

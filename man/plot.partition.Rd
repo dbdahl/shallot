@@ -33,4 +33,3 @@ The \code{\link{confidence}} function outputs an object of class \code{shallot.c
 example(shallot)
 }
 }
-% DBD: 2017-05-09

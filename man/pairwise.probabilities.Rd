@@ -37,4 +37,3 @@ The \code{\link[=as.matrix.shallot.pairwiseProbability]{as.matrix}} function ret
 example(shallot)
 }
 }
-% DBD: 2017-05-09

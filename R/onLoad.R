@@ -29,3 +29,7 @@
   invisible()
 }
 
+.onUnload <- function(libpath) {
+  .rscalaPackageUnload()
+}
+

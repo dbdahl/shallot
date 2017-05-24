@@ -21,7 +21,7 @@ The Ewens, Ewens-Pitman, Ewens attraction, Ewens-Pitman attraction, and ddCRP di
   \code{\link{confidence}}
 }
 \examples{
-\dontrun{
+\donttest{
 data <- iris[,-ncol(iris)]
 truth <- as.integer(iris[,ncol(iris)])
 distance <- as.dist(as.matrix(dist(scale(data))+0.001))
@@ -46,4 +46,3 @@ adj.rand.index(est,truth)
 }
 }
 \keyword{package}
-% DBD: 2017-05-09
