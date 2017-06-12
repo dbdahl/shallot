@@ -13,7 +13,7 @@ pairwise.probabilities(x, parallel = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{shallot.samples.raw} when supplied to \code{\link{pairwise.probabilities}} or an object of class \code{shallot.pairwiseProbability} when supplied to \code{\link{print}} and \code{\link{as.matrix}}.}
-\item{parallel}{Should sampling be done in parallel by simultaneously using all CPU cores?}
+\item{parallel}{Should all of the CPU cores should be used?  Defaults to \code{TRUE}.}
 \item{...}{Currently ignored.}
 }
 \details{

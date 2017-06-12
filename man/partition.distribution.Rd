@@ -31,7 +31,7 @@ ddcrp(mass, attraction)
 \item{discount}{An object of class \code{shallot.discount}.}
 \item{attraction}{An object of class \code{shallot.attraction}.}
 \item{n.items}{An integer containing the number of items to partition.}
-\item{names}{An character vector containing the names of the items.  The default names are of the form \dQuote{c1}, \dQuote{c2}, etc.}
+\item{names}{A character vector containing the names of the items.  The default names are of the form \dQuote{c1}, \dQuote{c2}, etc.}
 \item{x}{An object of class \code{shallot.distribution}.}
 \item{...}{Currently ignored.}
 }

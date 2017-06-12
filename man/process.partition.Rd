@@ -10,7 +10,7 @@ process.partition(x, sample.parameter = NULL, as.matrix = FALSE)
 \arguments{
 \item{x}{An object from the \code{\link{sample.partition}} function.}
 \item{sample.parameter}{If not \code{NULL}, a function taking no arguments and returning a random sample from the centering distribution.}
-\item{as.matrix}{Should the results be returned as a matrix of cluster labels or lists of partitions?}
+\item{as.matrix}{Should the results be returned as a matrix of cluster labels or list of partitions?}
 }
 \details{
 This function extracts the sampled partitions from the results of the \code{\link{sample.partition} function.}

@@ -3,7 +3,7 @@
 \alias{print.shallot.samples.raw}
 \title{Sample Partitions from Partition Distributions}
 \description{
-These functions sample partitions from the Ewens, Ewens-Pitman, Ewens attraction, Ewens-Pitman attraction, and ddCRP distributions.
+This function samples partitions from the Ewens, Ewens-Pitman, Ewens attraction, Ewens-Pitman attraction, and ddCRP distributions.
 }
 \usage{
 sample.partition(x, n.draws, parallel = TRUE)

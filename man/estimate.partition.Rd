@@ -9,7 +9,7 @@ estimate.partition(x, pairwise.probabilities = NULL,
     max.subsets = 0, max.scans = 0, parallel = TRUE)
 }
 \arguments{
-\item{x}{An object of class \code{shallot.samples.raw} obtained from \code{\link{process.partition}}.}
+\item{x}{An object from the \code{\link{sample.partition}} function.}
 \item{pairwise.probabilities}{An object of class \code{shallot.pairwiseProbability} obtained from \code{\link{pairwise.probabilities}}.  If not supplied, it will be computed from \var{x}.}
 \item{max.subsets}{An integer limiting the number of subsets.  Defaults to \code{0}, which does not impose a constraint on the number of subsets.}
 \item{max.scans}{An integer controlling the greedy search.  Defaults to \code{0}, which disables the greedy search.}
