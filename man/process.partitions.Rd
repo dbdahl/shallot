@@ -5,7 +5,7 @@
 This function extracts the partitions from the results of the \code{\link{sample.partitions} function.}
 }
 \usage{
-process.partitions(x, sample.parameter = NULL, as.matrix = FALSE)
+process.partitions(x, sample.parameter = NULL, as.matrix = TRUE)
 }
 \arguments{
 \item{x}{An object from the \code{\link{sample.partitions}} function.}

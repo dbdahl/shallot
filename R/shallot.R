@@ -588,11 +588,22 @@ nsubsets.variance <- function(x) {
 
 
 # Sample for partition distributions.
+.ewens <- function(ewens) {
+  mass <- .mass(ewens$mass)
+  s$.distribution.Ewens$apply(.nullModel(),mass,.AS.REFERENCE=TRUE)
+}
+
 .sample.ewens <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
   val partitionModelFactory = distribution.Ewens.factory(samplingModel,massFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
+
+.ewensPitman <- function(x) {
+  mass <- .mass(x$mass)
+  discount <- .discount(x$discount)
+  s$.distribution.EwensPitman$apply(.nullModel(),mass,discount,.AS.REFERENCE=TRUE)
+}
 
 .sample.ewensPitman <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
@@ -600,11 +611,24 @@ nsubsets.variance <- function(x) {
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
+.ewensAttraction <- function(x) {
+  mass <- .mass(x$mass)
+  attraction <- .attraction(x$attraction)
+  s$.distribution.EwensAttraction$apply(.nullModel(),mass,attraction,.AS.REFERENCE=TRUE)
+}
+
 .sample.ewensAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
   val partitionModelFactory = distribution.EwensAttraction.factory(samplingModel,massFactory,attractionFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
+
+.ewensPitmanAttraction <- function(x) {
+  mass <- .mass(x$mass)
+  discount <- .discount(x$discount)
+  attraction <- .attraction(x$attraction)
+  s$.distribution.EwensPitmanAttraction$apply(.nullModel(),mass,discount,attraction,.AS.REFERENCE=TRUE)
+}
 
 .sample.ewensPitmanAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
   val samplingModel = parameter.NullSamplingModel
@@ -648,6 +672,29 @@ print.shallot.samples.raw <- function(x, ...) {
 
 
 
+# Make probability mass function.
+partition.pmf <- function(x) {
+  distribution <- if ( inherits(x,"shallot.distribution.ewens") ) {
+    .ewens(x)
+  } else if ( inherits(x,"shallot.distribution.ewensPitman") ) {
+    .ewensPitman(x)
+  } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
+    .ewensAttraction(x)
+  } else if ( inherits(x,"shallot.distribution.ewensPitmanAttraction") ) {
+    .ewensPitmanAttraction(x)
+  } else stop("Unrecognized distribution.")
+  pmf <- distribution$logProbability(scalaNull("parameter.partition.Partition[Null]"),.EVALUATE=FALSE)
+  function(x, log=TRUE) {
+    partition <- if ( is.vector(x) ) .labels2partition(x)
+    else if ( is.list(x) ) .partition2partition(x)
+    else stop("'x' should be: i. a vector of cluster labels, or ii. a list containing partitions.")
+    v <- pmf(partition)
+    if ( log ) v else exp(v)
+  }
+}
+
+
+
 # Serialize partitions to R.
 serializePartitions <- function(ref, sample.parameter, as.matrix) {
   z <- .partitionsToMatrix(ref)
@@ -677,17 +724,21 @@ serializePartitions <- function(ref, sample.parameter, as.matrix) {
 
 
 # Process partitions that were sampled.
-process.partitions <- function(x, sample.parameter=NULL, as.matrix=FALSE) {
+process.partitions <- function(x, sample.parameter=NULL, as.matrix=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   serializePartitions(x$ref, sample.parameter, as.matrix)
 }
 
 
 
+# Null sampling model
+.nullModel <- function() s %.!% 'parameter.NullSamplingModel'
+
+
+
 # Pairwise Probabilities
-enumerate.partitions <- function(n.items, as.matrix=FALSE) {
-  nullModel <- function() s %.!% 'parameter.NullSamplingModel'
-  ref <- s$.parameter.partition.Partition$enumerate(nullModel(),as.integer(n.items)[1])
+enumerate.partitions <- function(n.items, as.matrix=TRUE) {
+  ref <- s$.parameter.partition.Partition$enumerate(.nullModel(),as.integer(n.items)[1])
   serializePartitions(ref, NULL, as.matrix)
 }
 
@@ -728,6 +779,10 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
   val samplingModel = parameter.NullSamplingModel
   parameter.partition.Partition(samplingModel,partition)
 '
+
+.partition2partition <- function(partition) {
+  stop("Not yet implemented.")
+}
 
 confidence <- function(pairwise.probabilities, partition) {
   tmpObj <- pairwise.probabilities$ref$confidenceComputations(.labels2partition(partition))

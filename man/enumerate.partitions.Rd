@@ -5,7 +5,7 @@
 This function extracts the partitions from the results of the \code{\link{sample.partitions} function.}
 }
 \usage{
-enumerate.partitions(n.items, as.matrix = FALSE)
+enumerate.partitions(n.items, as.matrix = TRUE)
 }
 \arguments{
 \item{n.items}{An integer given then number of items to partition.}
