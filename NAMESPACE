@@ -29,6 +29,7 @@ export(nsubsets.average)
 export(nsubsets.variance)
 export(sample.partitions)
 export(process.partitions)
+export(enumerate.partitions)
 
 S3method("print", "shallot.mass")
 S3method("print", "shallot.discount")

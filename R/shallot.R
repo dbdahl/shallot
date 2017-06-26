@@ -627,6 +627,7 @@ nsubsets.variance <- function(x) {
   }
 '
 
+# Sample partitions.
 sample.partitions <- function(x, n.draws, parallel=TRUE) {
   forwardSampler <- if ( inherits(x,"shallot.distribution.ewens") ) {
     .sample.ewens(x$n.items,.massFactory(x$mass))
@@ -647,10 +648,9 @@ print.shallot.samples.raw <- function(x, ...) {
 
 
 
-# Process partitions that were sampled.
-process.partitions <- function(x, sample.parameter=NULL, as.matrix=FALSE) {
-  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
-  z <- .partitionsToMatrix(x$ref)
+# Serialize partitions to R.
+serializePartitions <- function(ref, sample.parameter, as.matrix) {
+  z <- .partitionsToMatrix(ref)
   if ( as.matrix) {
     z <- z+1L
     r <- if ( is.null(sample.parameter) ) list(labels=z)
@@ -676,8 +676,25 @@ process.partitions <- function(x, sample.parameter=NULL, as.matrix=FALSE) {
 
 
 
+# Process partitions that were sampled.
+process.partitions <- function(x, sample.parameter=NULL, as.matrix=FALSE) {
+  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
+  serializePartitions(x$ref, sample.parameter, as.matrix)
+}
+
+
+
 # Pairwise Probabilities
-pairwise.probabilities <- function(x,parallel=TRUE) {
+enumerate.partitions <- function(n.items, as.matrix=FALSE) {
+  nullModel <- function() s %.!% 'parameter.NullSamplingModel'
+  ref <- s$.parameter.partition.Partition$enumerate(nullModel(),as.integer(n.items)[1])
+  serializePartitions(ref, NULL, as.matrix)
+}
+
+
+
+# Pairwise Probabilities
+pairwise.probabilities <- function(x, parallel=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   start.time <- proc.time()
   ref <- s$.org.ddahl.shallot.parameter.partition.PairwiseProbability$apply(x$ref,as.logical(parallel))
