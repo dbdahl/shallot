@@ -1,3 +1,7 @@
+0.3.3 (201x-xx-xx)
+  * Renamed functions sample.partition & process.partitions to
+    sample.partitions & process.partitions.
+
 0.3.2 (2017-05-24)
   * Spin down the Scala interpreter/compiler when the package is unloaded using
     the .rscalaPackageUnload function.

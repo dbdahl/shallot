@@ -627,7 +627,7 @@ nsubsets.variance <- function(x) {
   }
 '
 
-sample.partition <- function(x, n.draws, parallel=TRUE) {
+sample.partitions <- function(x, n.draws, parallel=TRUE) {
   forwardSampler <- if ( inherits(x,"shallot.distribution.ewens") ) {
     .sample.ewens(x$n.items,.massFactory(x$mass))
   } else if ( inherits(x,"shallot.distribution.ewensPitman") ) {
@@ -647,8 +647,8 @@ print.shallot.samples.raw <- function(x, ...) {
 
 
 
-# Process partitions that are sampled.
-process.partition <- function(x, sample.parameter=NULL, as.matrix=FALSE) {
+# Process partitions that were sampled.
+process.partitions <- function(x, sample.parameter=NULL, as.matrix=FALSE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   z <- .partitionsToMatrix(x$ref)
   if ( as.matrix) {

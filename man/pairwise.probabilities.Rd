@@ -28,8 +28,8 @@ The \code{\link[=as.matrix.shallot.pairwiseProbability]{as.matrix}} function ret
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{sample.partition}},
-\code{\link{process.partition}},
+\code{\link{sample.partitions}},
+\code{\link{process.partitions}},
 \code{\link{estimate.partition}}
 }
 \examples{
