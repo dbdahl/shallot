@@ -588,9 +588,9 @@ nsubsets.variance <- function(x) {
 
 
 # Sample for partition distributions.
-.ewens <- function(ewens) {
-  mass <- .mass(ewens$mass)
-  s$.distribution.Ewens$apply(.nullModel(),mass,.AS.REFERENCE=TRUE)
+.ewens <- function(x, samplingModel=.nullModel()) {
+  mass <- .mass(x$mass)
+  s$.distribution.Ewens$apply(samplingModel,mass,.AS.REFERENCE=TRUE)
 }
 
 .sample.ewens <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass')) s %.!% '
@@ -599,10 +599,10 @@ nsubsets.variance <- function(x) {
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.ewensPitman <- function(x) {
+.ewensPitman <- function(x, samplingModel=.nullModel()) {
   mass <- .mass(x$mass)
   discount <- .discount(x$discount)
-  s$.distribution.EwensPitman$apply(.nullModel(),mass,discount,.AS.REFERENCE=TRUE)
+  s$.distribution.EwensPitman$apply(samplingModel,mass,discount,.AS.REFERENCE=TRUE)
 }
 
 .sample.ewensPitman <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount')) s %.!% '
@@ -611,10 +611,10 @@ nsubsets.variance <- function(x) {
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.ewensAttraction <- function(x) {
+.ewensAttraction <- function(x, samplingModel=.nullModel()) {
   mass <- .mass(x$mass)
   attraction <- .attraction(x$attraction)
-  s$.distribution.EwensAttraction$apply(.nullModel(),mass,attraction,.AS.REFERENCE=TRUE)
+  s$.distribution.EwensAttraction$apply(samplingModel,mass,attraction,.AS.REFERENCE=TRUE)
 }
 
 .sample.ewensAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
@@ -623,11 +623,11 @@ nsubsets.variance <- function(x) {
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.ewensPitmanAttraction <- function(x) {
+.ewensPitmanAttraction <- function(x, samplingModel=.nullModel()) {
   mass <- .mass(x$mass)
   discount <- .discount(x$discount)
   attraction <- .attraction(x$attraction)
-  s$.distribution.EwensPitmanAttraction$apply(.nullModel(),mass,discount,attraction,.AS.REFERENCE=TRUE)
+  s$.distribution.EwensPitmanAttraction$apply(samplingModel,mass,discount,attraction,.AS.REFERENCE=TRUE)
 }
 
 .sample.ewensPitmanAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
@@ -661,7 +661,7 @@ sample.partitions <- function(x, n.draws, parallel=TRUE) {
     .sample.ewensAttraction(x$n.items,.massFactory(x$mass),.attractionFactory(x$attraction))
   } else if ( inherits(x,"shallot.distribution.ewensPitmanAttraction") ) {
     .sample.ewensPitmanAttraction(x$n.items,.massFactory(x$mass),.discountFactory(x$discount),.attractionFactory(x$attraction))
-  } else stop("Unrecognized distribution.")
+  } else stop("Unrecognized partition distribution.")
   ref <- .sampleForward(n.draws,.rdg(),forwardSampler,parallel)
   structure(list(ref=ref, names=x$names), class="shallot.samples.raw")
 }
@@ -672,9 +672,24 @@ print.shallot.samples.raw <- function(x, ...) {
 
 
 
-# Make probability mass function.
-partition.pmf <- function(x) {
-  distribution <- if ( inherits(x,"shallot.distribution.ewens") ) {
+# Posterior simulation via MCMC.
+sample.partitions.posterior <- function(partition, sampling.model, partition.model, n.draws) {
+  sm <- .samplingModel(sampling.model)
+  pm <- .partitionModel(partition.model)
+  p <- .labels2partition(partition, sm)
+  rdg <- .rdg()
+  sampler <- function(p=scalaNull("parameter.partition.Partition"),
+                      sm=scalaNull("parameter.SamplingDistribution[PersistentReference]"),
+                      pm=scalaNull("distribution.PartitionModel[PersistentReference]"), rdg=scalaNull("RDG")) s %!% '
+    mcmc.AuxiliaryGibbsSampler(p, sm, pm, rdg)
+  ' 
+  sampler(p,sm,pm,rdg)
+}
+
+
+
+.partitionModel <- function(x) {
+  if ( inherits(x,"shallot.distribution.ewens") ) {
     .ewens(x)
   } else if ( inherits(x,"shallot.distribution.ewensPitman") ) {
     .ewensPitman(x)
@@ -682,10 +697,17 @@ partition.pmf <- function(x) {
     .ewensAttraction(x)
   } else if ( inherits(x,"shallot.distribution.ewensPitmanAttraction") ) {
     .ewensPitmanAttraction(x)
-  } else stop("Unrecognized distribution.")
-  pmf <- distribution$logProbability(scalaNull("parameter.partition.Partition[Null]"),.EVALUATE=FALSE)
+  } else stop("Unrecognized partition distribution.")
+}
+
+
+
+# Make probability mass function.
+partition.pmf <- function(x) {
+  distribution <- .partitionModel(x)
+  pmf <- distribution$logProbability(scalaNull("parameter.partition.Partition[PersistentReference]"),.EVALUATE=FALSE)
   function(x, log=TRUE) {
-    partition <- if ( is.vector(x) ) .labels2partition(x)
+    partition <- if ( is.vector(x) ) .labels2partition(x,.nullModel())
     else if ( is.list(x) ) .partition2partition(x)
     else stop("'x' should be: i. a vector of cluster labels, or ii. a list containing partitions.")
     v <- pmf(partition)
@@ -723,6 +745,47 @@ serializePartitions <- function(ref, sample.parameter, as.matrix) {
 
 
 
+# Sampling model
+sampling.model <- function(sample.parameter, log.density) {
+  if ( ! is.function(sample.parameter) ) stop("'sample.parameter' should be a function.")
+  if ( length(formals(sample.parameter)) != 2 ) stop("'sample.parameter' should take two arguments named 'indices' and 'parameter'.")
+  if ( ! identical(names(formals(sample.parameter)),c("indices","parameter")) )
+    stop("'sample.parameter' should take two arguments named 'indices' and 'parameter'.")
+  if ( ! is.function(log.density) ) stop("'log.density' should be a function.")
+  if ( length(formals(log.density)) != 3 ) stop("'log.density' should take three arguments named 'i', 'indices', and 'parameter'.")
+  if ( ! identical(names(formals(log.density)),c("i","indices","parameter")) )
+    stop("'log.density' should take three arguments named 'i', 'indices', and 'parameter'.")
+  tryCatch(p <- sample.parameter(), error=function(e) stop("'sample.parameter' should sample from the centering distribution when no arguments are provided."))
+  tryCatch(d <- log.density(1,1,p), error=function(e) stop("'log.density' should doesn't pass sanity check log.density(1,1,p)."))
+  if ( ( ! is.vector(d) ) || ( length(d) != 1 ) ) stop("'log.density' should return a numeric vector of length one.")
+  r <- list(sample.parameter=sample.parameter, log.density=log.density)
+  structure(r, class="shallot.distribution.data")
+}
+
+.samplingModel <- function(samplingModel) {
+  s %.!% '
+    val sp = R.evalReference(samplingModel+"$sample.parameter")
+    val ld = R.evalReference(samplingModel+"$log.density")
+    new parameter.SamplingModel[PersistentReference] {
+
+      def logDensity(i: Int, subset: parameter.partition.Subset[PersistentReference]): Double = {
+        R.invokeD0(ld, i, subset.toArray, subset.parameter)
+      }
+
+      def sample(subset: parameter.partition.Subset[PersistentReference]): PersistentReference = {
+        R.invokeReference(sp, subset.toArray, subset.parameter)
+      }
+
+      def sample: PersistentReference = {
+        R.invokeReference(sp)
+      }
+
+    }
+  '
+}
+
+
+
 # Process partitions that were sampled.
 process.partitions <- function(x, sample.parameter=NULL, as.matrix=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
@@ -732,7 +795,7 @@ process.partitions <- function(x, sample.parameter=NULL, as.matrix=TRUE) {
 
 
 # Null sampling model
-.nullModel <- function() s %.!% 'parameter.NullSamplingModel'
+.nullModel <- function() s %.!% 'new parameter.GeneralNullSamplingModel[PersistentReference]()'
 
 
 
@@ -748,7 +811,7 @@ enumerate.partitions <- function(n.items, as.matrix=TRUE) {
 pairwise.probabilities <- function(x, parallel=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   start.time <- proc.time()
-  ref <- s$.org.ddahl.shallot.parameter.partition.PairwiseProbability$apply(x$ref,as.logical(parallel))
+  ref <- s$.parameter.partition.PairwiseProbability$apply(x$ref,as.logical(parallel))
   result <- list(ref=ref,n.items=ref$nItems(),names=x$names,proc.time=proc.time()-start.time)
   structure(result, class="shallot.pairwiseProbability")
 }
@@ -767,7 +830,7 @@ as.matrix.shallot.pairwiseProbability <- function(x, ...) {
 estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, max.scans=0, parallel=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   if ( is.null(pairwise.probabilities) ) pairwise.probabilities <- pairwise.probabilities(x)
-  ref <- s$.org.ddahl.shallot.parameter.partition.MinBinder$apply(
+  ref <- s$.parameter.partition.MinBinder$apply(
       pairwise.probabilities$ref, x$ref, as.integer(max.subsets), as.integer(max.scans), as.logical(parallel))
   structure(ref$toLabels(), names=x$names)
 }
@@ -775,8 +838,7 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
 
 
 # Confidence
-.labels2partition <- function(partition=integer()) s %.!% '
-  val samplingModel = parameter.NullSamplingModel
+.labels2partition <- function(partition=integer(), samplingModel=scalaNull("parameter.SamplingModel[PersistentReference]")) s %.!% '
   parameter.partition.Partition(samplingModel,partition)
 '
 
