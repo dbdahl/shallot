@@ -673,30 +673,49 @@ print.shallot.samples.raw <- function(x, ...) {
 
 
 # Posterior simulation via MCMC.
-sample.partitions.posterior <- function(partition, sampling.model, partition.model, n.draws) {
+sample.partitions.posterior <- function(partition, sampling.model, partition.model, n.draws, progress.bar=interactive()) {
+  sampler <- function(p=scalaNull("org.ddahl.shallot.parameter.partition.Partition[org.ddahl.rscala.PersistentReference]"),
+                      sm=scalaNull("org.ddahl.shallot.parameter.SamplingModel[org.ddahl.rscala.PersistentReference]"),
+                      pm=scalaNull("org.ddahl.shallot.distribution.EwensPitmanAttraction[org.ddahl.rscala.PersistentReference]"),
+                      rdg=scalaNull("org.apache.commons.math3.random.RandomDataGenerator"),
+                      progressBar=NULL, showProgressBar=TRUE) s %.!% '
+    implicit def intWithTimes(n: Int) = new {        
+      def times(f: => Unit) = 1 to n foreach {_ => f}
+    }
+    val nDraws = R.getI0("n.draws")
+    val monitor = mcmc.AcceptanceRateMonitor()
+    var partition = p
+    var counter = 0
+    for ( i <- 1 to nDraws ) {
+      partition = monitor(mcmc.AuxiliaryGibbsSampler(partition, sm, pm, rdg))
+      if ( showProgressBar && ( 100*i % nDraws == 0 ) ) {
+        counter += 1
+        R.invoke("setTxtProgressBar",progressBar,counter)
+      }
+    }
+    (partition, monitor)
+  '
   sm <- .samplingModel(sampling.model)
-  pm <- .partitionModel(partition.model)
+  pm <- .partitionModel(partition.model, sm)
   p <- .labels2partition(partition, sm)
   rdg <- .rdg()
-  sampler <- function(p=scalaNull("parameter.partition.Partition"),
-                      sm=scalaNull("parameter.SamplingDistribution[PersistentReference]"),
-                      pm=scalaNull("distribution.PartitionModel[PersistentReference]"), rdg=scalaNull("RDG")) s %!% '
-    mcmc.AuxiliaryGibbsSampler(p, sm, pm, rdg)
-  ' 
-  sampler(p,sm,pm,rdg)
+  pb <- if ( progress.bar ) txtProgressBar(min=0, max=100, style=3) else NULL
+  result <- sampler(p,sm,pm,rdg,pb,progress.bar)
+  if ( progress.bar ) close(pb)
+  result
 }
 
 
 
-.partitionModel <- function(x) {
+.partitionModel <- function(x, samplingModel=.nullModel()) {
   if ( inherits(x,"shallot.distribution.ewens") ) {
-    .ewens(x)
+    .ewens(x, samplingModel)
   } else if ( inherits(x,"shallot.distribution.ewensPitman") ) {
-    .ewensPitman(x)
+    .ewensPitman(x, samplingModel)
   } else if ( inherits(x,"shallot.distribution.ewensAttraction") ) {
-    .ewensAttraction(x)
+    .ewensAttraction(x, samplingModel)
   } else if ( inherits(x,"shallot.distribution.ewensPitmanAttraction") ) {
-    .ewensPitmanAttraction(x)
+    .ewensPitmanAttraction(x, samplingModel)
   } else stop("Unrecognized partition distribution.")
 }
 
@@ -762,21 +781,22 @@ sampling.model <- function(sample.parameter, log.density) {
   structure(r, class="shallot.distribution.data")
 }
 
-.samplingModel <- function(samplingModel) {
+.samplingModel <- function(samplingModel=NULL) {
   s %.!% '
     val sp = R.evalReference(samplingModel+"$sample.parameter")
     val ld = R.evalReference(samplingModel+"$log.density")
+
     new parameter.SamplingModel[PersistentReference] {
 
       def logDensity(i: Int, subset: parameter.partition.Subset[PersistentReference]): Double = {
-        R.invokeD0(ld, i, subset.toArray, subset.parameter)
+        R.invokeD0(ld, i+1, subset.toArray.map(_+1), subset.parameter)
       }
 
       def sample(subset: parameter.partition.Subset[PersistentReference]): PersistentReference = {
-        R.invokeReference(sp, subset.toArray, subset.parameter)
+        R.invokeReference(sp, subset.toArray.map(_+1), subset.parameter)
       }
 
-      def sample: PersistentReference = {
+      def sample(): PersistentReference = {
         R.invokeReference(sp)
       }
 
