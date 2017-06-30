@@ -744,7 +744,7 @@ partition.pmf <- function(x) {
 
 # Serialize partitions to R.
 serializePartitions <- function(ref, as.matrix, sample.parameter) {
-  withParameters <- ! is.null(sample.parameter)
+  withParameters <- ( ! is.null(sample.parameter) ) && ( ref[['type']] != "List[org.ddahl.shallot.parameter.partition.Partition[Null]]" )
   if ( withParameters ) {
     zandp <- .partitionsToMatrixWithParameters(ref)
     z <- zandp$"_1"()

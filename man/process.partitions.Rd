@@ -5,12 +5,13 @@
 This function extracts the partitions from the results of the \code{\link{sample.partitions} function.}
 }
 \usage{
-process.partitions(x, sample.parameter = NULL, as.matrix = TRUE)
+process.partitions(x, as.matrix = TRUE, expand = FALSE, sample.parameter = FALSE)
 }
 \arguments{
 \item{x}{An object from the \code{\link{sample.partitions}} function.}
-\item{sample.parameter}{If not \code{NULL}, a function taking no arguments and returning a random sample from the centering distribution.}
 \item{as.matrix}{Should the results be returned as a matrix of cluster labels or list of partitions?}
+\item{expand}{If \code{TRUE}, a matrix of item-specific parameter values is returned.  This requires that cluster parameters are scalars?}
+\item{sample.parameter}{A function taking no arguments and returning a random sample from the centering distribution.}
 }
 \details{
 This function extracts the sampled partitions from the results of the \code{\link{sample.partitions} function.}
