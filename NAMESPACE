@@ -4,7 +4,7 @@ import(stats)
 
 importFrom("grDevices", "heat.colors", "rainbow", "topo.colors")
 importFrom("graphics", "abline", "axis", "box", "image", "pairs", "par", "points", "polygon", "segments", "text")
-importFrom("utils", "capture.output")
+importFrom("utils", "capture.output", "txtProgressBar", "setTxtProgressBar")
 
 export(adj.rand.index)
 export(mass)

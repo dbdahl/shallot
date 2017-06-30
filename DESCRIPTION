@@ -2,7 +2,7 @@ Package: shallot
 Type: Package
 Title: Random Partition Distribution Indexed by Pairwise Information
 Version: 0.3.2-1
-Date: 2017-06-29
+Date: 2017-06-30
 Description: Implementations are provided for the models described in the paper D. B. Dahl, R. Day, J. Tsai (2017) <DOI:10.1080/01621459.2016.1165103>.  The Ewens, Ewens-Pitman, Ewens attraction, Ewens-Pitman attraction, and ddCRP distributions are available for prior simulation.  We hope in the future to add posterior simulation with a user-supplied likelihood.  Supporting functions for partition estimation and plotting are also planned.
 Authors@R: c(person(given="David B.",family="Dahl",role=c("aut","cre"),email="dahl@stat.byu.edu"), person(given="The Apache Software Foundation",role=c("ctb","cph")))
 URL: https://github.com/dbdahl/shallot

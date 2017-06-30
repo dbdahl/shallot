@@ -636,8 +636,15 @@ nsubsets.variance <- function(x) {
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.partitionsToMatrix <- function(x=scalaNull('List[parameter.partition.Partition[Null]]')) s %!% '
+.partitionsToMatrix <- function(x=scalaNull('List[parameter.partition.Partition[PersistentReference]]')) s %!% '
   x.map(_.toLabels).toArray
+'
+
+.partitionsToMatrixWithParameters <- function(x=scalaNull('List[parameter.partition.Partition[PersistentReference]]')) s %!% '
+  val labelsWithParameters = x.map(_.toLabelsWithParameters)
+  val labels = labelsWithParameters.map(_._1).toArray
+  val parameters = labelsWithParameters.map(_._2.map(_.toString)).toArray
+  (labels, parameters)
 '
 
 .sampleForward <- function(nSamples=0L, rdg=scalaNull('RDG'), sampler=scalaNull('Function2[Int, RDG, List[parameter.partition.Partition[Null]]]'), parallel=TRUE) s %.!% '
@@ -674,35 +681,34 @@ print.shallot.samples.raw <- function(x, ...) {
 
 # Posterior simulation via MCMC.
 sample.partitions.posterior <- function(partition, sampling.model, partition.model, n.draws, progress.bar=interactive()) {
-  sampler <- function(p=scalaNull("org.ddahl.shallot.parameter.partition.Partition[org.ddahl.rscala.PersistentReference]"),
-                      sm=scalaNull("org.ddahl.shallot.parameter.SamplingModel[org.ddahl.rscala.PersistentReference]"),
-                      pm=scalaNull("org.ddahl.shallot.distribution.EwensPitmanAttraction[org.ddahl.rscala.PersistentReference]"),
-                      rdg=scalaNull("org.apache.commons.math3.random.RandomDataGenerator"),
+  sampler <- function(p=scalaNull("parameter.partition.Partition[PersistentReference]"),
+                      sm=scalaNull("parameter.SamplingModel[PersistentReference]"),
+                      pm=scalaNull("distribution.EwensPitmanAttraction[PersistentReference]"),
+                      rdg=scalaNull("RDG"),
                       progressBar=NULL, showProgressBar=TRUE) s %.!% '
-    implicit def intWithTimes(n: Int) = new {        
-      def times(f: => Unit) = 1 to n foreach {_ => f}
-    }
     val nDraws = R.getI0("n.draws")
     val monitor = mcmc.AcceptanceRateMonitor()
+    var samples = new scala.collection.mutable.ListBuffer[parameter.partition.Partition[PersistentReference]]()
     var partition = p
     var counter = 0
     for ( i <- 1 to nDraws ) {
-      partition = monitor(mcmc.AuxiliaryGibbsSampler(partition, sm, pm, rdg))
+      partition = mcmc.AuxiliaryGibbsSampler(partition, sm, pm, rdg)._1
+      samples += partition
       if ( showProgressBar && ( 100*i % nDraws == 0 ) ) {
         counter += 1
         R.invoke("setTxtProgressBar",progressBar,counter)
       }
     }
-    (partition, monitor)
+    samples.toList
   '
   sm <- .samplingModel(sampling.model)
   pm <- .partitionModel(partition.model, sm)
   p <- .labels2partition(partition, sm)
   rdg <- .rdg()
   pb <- if ( progress.bar ) txtProgressBar(min=0, max=100, style=3) else NULL
-  result <- sampler(p,sm,pm,rdg,pb,progress.bar)
+  ref <- sampler(p,sm,pm,rdg,pb,progress.bar)
   if ( progress.bar ) close(pb)
-  result
+  structure(list(ref=ref, names=partition.model$names), class="shallot.samples.raw")
 }
 
 
@@ -737,12 +743,28 @@ partition.pmf <- function(x) {
 
 
 # Serialize partitions to R.
-serializePartitions <- function(ref, sample.parameter, as.matrix) {
-  z <- .partitionsToMatrix(ref)
+serializePartitions <- function(ref, as.matrix, sample.parameter) {
+  withParameters <- ! is.null(sample.parameter)
+  if ( withParameters ) {
+    zandp <- .partitionsToMatrixWithParameters(ref)
+    z <- zandp$"_1"()
+    p <- if ( withParameters && is.function(sample.parameter) ) apply(z,1,function(zz) lapply(1:max(zz),function(i) sample.parameter()))
+    else {
+      extractor <- function(x=scalaNull("Array[Array[String]]"),i=0L) s %!% 'x(i-1)'
+      pp <- zandp$"_2"()
+      ppp <- vector(mode="list", length=n.draws)
+      for ( i in 1:n.draws ) {
+        ppp[[i]] <- sapply(extractor(pp,i), function(x) s$var(x), USE.NAMES=FALSE)
+      }
+      ppp
+    }
+  } else {
+    z <- .partitionsToMatrix(ref)
+    p <- NULL
+  }
   if ( as.matrix) {
     z <- z+1L
-    r <- if ( is.null(sample.parameter) ) list(labels=z)
-    else list(labels=z,parameters=apply(z,1,function(zz) lapply(1:max(zz),function(i) sample.parameter())))
+    r <- list(labels=z,parameters=p)
     structure(r, class="shallot.samples.labels")
   } else {
     n.draws <- nrow(z)
@@ -753,8 +775,8 @@ serializePartitions <- function(ref, sample.parameter, as.matrix) {
       rr <- vector(mode="list", length=n.subsets)
       for ( j in 1:n.subsets ) {
         items <- which(zz==j-1)
-        rr[[j]] <- if ( is.null(sample.parameter) ) list(items=items)
-        else list(items=items,parameter=sample.parameter())
+        rr[[j]] <- if ( is.null(p) ) list(items=items, parameter=NULL)
+        else list(items=items,parameter=p[[i]][[j]])
       }
       r[[i]] <- rr
     }
@@ -807,9 +829,20 @@ sampling.model <- function(sample.parameter, log.density) {
 
 
 # Process partitions that were sampled.
-process.partitions <- function(x, sample.parameter=NULL, as.matrix=TRUE) {
+process.partitions <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter=FALSE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
-  serializePartitions(x$ref, sample.parameter, as.matrix)
+  result <- serializePartitions(x$ref, as.matrix, sample.parameter)
+  if ( expand ) {
+    if ( identical(sample.parameter,NULL) ) stop("'sample.parameter' may not be null when 'expand=TRUE'.")
+    if ( ! as.matrix ) stop("'expand=TRUE' is only valid when 'as.matrix=TRUE'.")
+    mega <- matrix(NA,nrow=nrow(result$labels),ncol=ncol(result$labels))
+    for ( i in 1:nrow(mega) ) {
+      rhs <- result$parameters[[i]]
+      if ( ! is.vector(rhs) ) stop("'expand=TRUE' is only valid when all the parameters are scalars.")
+      mega[i, ] <- rhs[result$labels[i,]]
+    }
+    mega
+  } else result
 }
 
 
@@ -822,7 +855,7 @@ process.partitions <- function(x, sample.parameter=NULL, as.matrix=TRUE) {
 # Pairwise Probabilities
 enumerate.partitions <- function(n.items, as.matrix=TRUE) {
   ref <- s$.parameter.partition.Partition$enumerate(.nullModel(),as.integer(n.items)[1])
-  serializePartitions(ref, NULL, as.matrix)
+  serializePartitions(ref, as.matrix=as.matrix, sample.parameter=NULL)
 }
 
 
@@ -867,7 +900,7 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
 }
 
 confidence <- function(pairwise.probabilities, partition) {
-  tmpObj <- pairwise.probabilities$ref$confidenceComputations(.labels2partition(partition))
+  tmpObj <- pairwise.probabilities$ref$confidenceComputations(.labels2partition(partition,.nullModel()))
   partition <- tmpObj$"_1"() + 1
   names(partition) <- pairwise.probabilities$names
   confidence <- tmpObj$"_2"()
