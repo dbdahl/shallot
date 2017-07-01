@@ -794,11 +794,12 @@ partition.pmf <- function(x) {
 
 
 # Serialize partitions to R.
-serializePartitions <- function(ref, as.matrix, sample.parameter) {
+serializePartitions <- function(ref, names, as.matrix, sample.parameter) {
   withParameters <- ( ! is.null(sample.parameter) ) && ( ref$type != "List[org.ddahl.shallot.parameter.partition.Partition[Null]]" )
   if ( withParameters ) {
     zandp <- .partitionsToMatrixWithParameters(ref)
     z <- zandp$"_1"()
+    colnames(z) <- names
     p <- if ( withParameters && is.function(sample.parameter) ) apply(z,1,function(zz) lapply(1:max(zz),function(i) sample.parameter()))
     else {
       extractor <- function(x=scalaNull("Array[Array[String]]"),i=0L) s %!% 'x(i-1)'
@@ -811,6 +812,7 @@ serializePartitions <- function(ref, as.matrix, sample.parameter) {
     }
   } else {
     z <- .partitionsToMatrix(ref)
+    colnames(z) <- names
     p <- NULL
   }
   if ( as.matrix) {
@@ -880,14 +882,14 @@ sampling.model <- function(sample.parameter, log.density) {
 
 
 # Process partitions that were sampled.
-process.partitions <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter=FALSE) {
+process.samples <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter=FALSE) {
   if ( inherits(x,"shallot.samples.full") ) {
-    result <- process.partitions(x$raw, as.matrix=as.matrix, expand=expand, sample.parameter=sample.parameter)
+    result <- process.samples(x$raw, as.matrix=as.matrix, expand=expand, sample.parameter=sample.parameter)
     result[['hyperparameters']] <- x$hyperparameters
     return(result)
   }
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the functions 'sample.partition' or 'sample.partition.posterior'.")
-  result <- serializePartitions(x$ref, as.matrix, sample.parameter)
+  result <- serializePartitions(x$ref, x$names, as.matrix, sample.parameter)
   if ( expand ) {
     if ( identical(sample.parameter,NULL) ) stop("'sample.parameter' may not be null when 'expand=TRUE'.")
     if ( ! as.matrix ) stop("'expand=TRUE' is only valid when 'as.matrix=TRUE'.")
@@ -897,6 +899,7 @@ process.partitions <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter
       if ( ! is.vector(rhs) ) stop("'expand=TRUE' is only valid when all the parameters are scalars.")
       mega[i, ] <- rhs[result$partitions$labels[i,]]
     }
+    colnames(mega) <- x$names
     list(partitions=mega)
   } else result
 }
@@ -911,7 +914,7 @@ process.partitions <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter
 # Pairwise Probabilities
 enumerate.partitions <- function(n.items, as.matrix=TRUE) {
   ref <- s$.Partition$enumerate(.nullModel(),as.integer(n.items)[1])
-  serializePartitions(ref, as.matrix=as.matrix, sample.parameter=NULL)
+  serializePartitions(ref, NULL, as.matrix=as.matrix, sample.parameter=NULL)
 }
 
 

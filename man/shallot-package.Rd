@@ -33,11 +33,11 @@ mass <- mass(1.0, fixed = TRUE)
 discount <- discount(0.2, fixed = TRUE)
 distribution <- ewens.pitman.attraction(mass, discount, attraction)
 
-samples.raw <- sample.partitions(distribution, 500, parallel=FALSE)
-samples <- process.partitions(samples.raw,as.matrix=TRUE)
+raw <- sample.partitions(distribution, 500, parallel=FALSE)
+samples <- process.samples(raw,as.matrix=TRUE)
 
-est <- estimate.partition(samples.raw,max.subsets=3,max.scans=0, parallel=FALSE)
-pp <- pairwise.probabilities(samples.raw, parallel=FALSE)
+est <- estimate.partition(raw,max.subsets=3,max.scans=0, parallel=FALSE)
+pp <- pairwise.probabilities(raw, parallel=FALSE)
 
 conf <- confidence(pp,est)
 plot(conf)
