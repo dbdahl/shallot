@@ -55,14 +55,14 @@ mass <- function(...,fixed=TRUE) {
 
 # Not exported:  Mass wrapper
 .mass <- function(mass=NULL) s %.!% '
-  parameter.Mass(R.evalD0(mass+"$value"))
+  Mass(R.evalD0(mass+"$value"))
 '
 
 .massFactory <- function(mass=NULL) s %.!% '
   if ( R.evalL0(mass+"$fixed")  ) {
-    parameter.Mass.factory(R.evalD0(mass+"$value"))
+    Mass.factory(R.evalD0(mass+"$value"))
   } else {
-    parameter.Mass.factory(R.evalD0(mass+"$shape"),R.evalD0(mass+"$rate"),rdg())
+    Mass.factory(R.evalD0(mass+"$shape"),R.evalD0(mass+"$rate"),rdg())
   }
 '
 
@@ -104,14 +104,14 @@ discount <- function(...,fixed=TRUE) {
 
 # Not exported:  Discount wrapper 
 .discount <- function(discount=NULL) s %.!% '
-  parameter.Discount(R.evalD0(discount+"$value"))
+  Discount(R.evalD0(discount+"$value"))
 '
 
 .discountFactory <- function(discount=NULL) s %.!% '
   if ( R.evalL0(discount+"$fixed")  ) {
-    parameter.Discount.factory(R.evalD0(discount+"$value"))
+    Discount.factory(R.evalD0(discount+"$value"))
   } else {
-    parameter.Discount.factory(R.evalD0(discount+"$shape1"),R.evalD0(discount+"$shape2"),rdg())
+    Discount.factory(R.evalD0(discount+"$shape1"),R.evalD0(discount+"$shape2"),rdg())
   }
 '
 
@@ -150,14 +150,14 @@ permutation <- function(...,n.items=NULL,fixed=TRUE) {
 }
 
 .permutation <- function(permutation) {
-  s$.parameter.Permutation$apply(permutation$value-1L)
+  s$.Permutation$apply(permutation$value-1L)
 }
 
 .permutationFactory <- function(permutation) {
   if ( permutation$fixed ) {
-    s$.parameter.Permutation$factory(permutation$value-1L)
+    s$.Permutation$factory(permutation$value-1L)
   } else {
-    s$.parameter.Permutation$factory(permutation$n.items,.rdg())
+    s$.Permutation$factory(permutation$n.items,.rdg())
   }
 }
 
@@ -262,23 +262,23 @@ decay.generic <- function(temperature,distance,type,max.temperature,max.distance
 
 .decay <- function(decay) {
   temp <- min(decay$temperature$value,decay$max.temperature)
-       if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecay$new(temp)
-  else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecay$new(temp)
-  else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecay$new(temp,decay$max.distance)
+       if ( decay$type == "reciprocal" )  s$.decay.ReciprocalDecay$new(temp)
+  else if ( decay$type == "exponential" ) s$.decay.ExponentialDecay$new(temp)
+  else if ( decay$type == "subtraction" ) s$.decay.SubtractionDecay$new(temp,decay$max.distance)
 }
 
 .decayFactory <- function(decay) {
   if ( decay$temperature$fixed ) {
     temp <- min(decay$temperature$value,decay$max.temperature)
-         if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(temp)
-    else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(temp)
-    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(decay$max.distance)$factory(temp)
+         if ( decay$type == "reciprocal" )  s$.decay.ReciprocalDecayFactory$factory(temp)
+    else if ( decay$type == "exponential" ) s$.decay.ExponentialDecayFactory$factory(temp)
+    else if ( decay$type == "subtraction" ) s$.decay.SubtractionDecayFactory$new(decay$max.distance)$factory(temp)
   } else {
     shape <- decay$temperature$shape
     rate <- decay$temperature$rate
-         if ( decay$type == "reciprocal" )  s$.parameter.decay.ReciprocalDecayFactory$factory(shape,rate,.rdg())
-    else if ( decay$type == "exponential" ) s$.parameter.decay.ExponentialDecayFactory$factory(shape,rate,.rdg())
-    else if ( decay$type == "subtraction" ) s$.parameter.decay.SubtractionDecayFactory$new(decay$max.distance)$factory(shape,rate,.rdg())
+         if ( decay$type == "reciprocal" )  s$.decay.ReciprocalDecayFactory$factory(shape,rate,.rdg())
+    else if ( decay$type == "exponential" ) s$.decay.ExponentialDecayFactory$factory(shape,rate,.rdg())
+    else if ( decay$type == "subtraction" ) s$.decay.SubtractionDecayFactory$new(decay$max.distance)$factory(shape,rate,.rdg())
   }
 }
 
@@ -317,7 +317,7 @@ attraction <- function(permutation, decay) {
 }
 
 .distance <- function(distance) {
-  s$.parameter.Distance$apply(as.matrix(distance),FALSE)
+  s$.Distance$apply(as.matrix(distance),FALSE)
 }
 
 .attraction <- function(attraction) {
@@ -593,8 +593,8 @@ nsubsets.variance <- function(x) {
   s$.distribution.Ewens$apply(samplingModel,mass,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewens <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass')) s %.!% '
-  val samplingModel = parameter.NullSamplingModel
+.sample.ewens <- function(nItems=0L, massFactory=scalaNull('() => Mass')) s %.!% '
+  val samplingModel = NullSamplingModel
   val partitionModelFactory = distribution.Ewens.factory(samplingModel,massFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
@@ -605,8 +605,8 @@ nsubsets.variance <- function(x) {
   s$.distribution.EwensPitman$apply(samplingModel,mass,discount,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewensPitman <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount')) s %.!% '
-  val samplingModel = parameter.NullSamplingModel
+.sample.ewensPitman <- function(nItems=0L, massFactory=scalaNull('() => Mass'), discountFactory=scalaNull('() => Discount')) s %.!% '
+  val samplingModel = NullSamplingModel
   val partitionModelFactory = distribution.EwensPitman.factory(samplingModel,massFactory,discountFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
@@ -617,8 +617,8 @@ nsubsets.variance <- function(x) {
   s$.distribution.EwensAttraction$apply(samplingModel,mass,attraction,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewensAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
-  val samplingModel = parameter.NullSamplingModel
+.sample.ewensAttraction <- function(nItems=0L, massFactory=scalaNull('() => Mass'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
+  val samplingModel = NullSamplingModel
   val partitionModelFactory = distribution.EwensAttraction.factory(samplingModel,massFactory,attractionFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
@@ -630,24 +630,24 @@ nsubsets.variance <- function(x) {
   s$.distribution.EwensPitmanAttraction$apply(samplingModel,mass,discount,attraction,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewensPitmanAttraction <- function(nItems=0L, massFactory=scalaNull('() => parameter.Mass'), discountFactory=scalaNull('() => parameter.Discount'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
-  val samplingModel = parameter.NullSamplingModel
+.sample.ewensPitmanAttraction <- function(nItems=0L, massFactory=scalaNull('() => Mass'), discountFactory=scalaNull('() => Discount'), attractionFactory=scalaNull('() => distribution.Attraction')) s %.!% '
+  val samplingModel = NullSamplingModel
   val partitionModelFactory = distribution.EwensPitmanAttraction.factory(samplingModel,massFactory,discountFactory,attractionFactory)
   distribution.PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.partitionsToMatrix <- function(x=scalaNull('List[parameter.partition.Partition[PersistentReference]]')) s %!% '
+.partitionsToMatrix <- function(x=scalaNull('List[Partition[PersistentReference]]')) s %!% '
   x.map(_.toLabels).toArray
 '
 
-.partitionsToMatrixWithParameters <- function(x=scalaNull('List[parameter.partition.Partition[PersistentReference]]')) s %!% '
+.partitionsToMatrixWithParameters <- function(x=scalaNull('List[Partition[PersistentReference]]')) s %!% '
   val labelsWithParameters = x.map(_.toLabelsWithParameters)
   val labels = labelsWithParameters.map(_._1).toArray
   val parameters = labelsWithParameters.map(_._2.map(_.toString)).toArray
   (labels, parameters)
 '
 
-.sampleForward <- function(nSamples=0L, rdg=scalaNull('RDG'), sampler=scalaNull('Function2[Int, RDG, List[parameter.partition.Partition[Null]]]'), parallel=TRUE) s %.!% '
+.sampleForward <- function(nSamples=0L, rdg=scalaNull('RDG'), sampler=scalaNull('Function2[Int, RDG, List[Partition[Null]]]'), parallel=TRUE) s %.!% '
   if (!parallel) sampler(nSamples, rdg)
   else {
     val nCores = Runtime.getRuntime.availableProcessors
@@ -681,14 +681,14 @@ print.shallot.samples.raw <- function(x, ...) {
 
 # Posterior simulation via MCMC.
 sample.partitions.posterior <- function(partition, sampling.model, partition.model, n.draws, progress.bar=interactive()) {
-  sampler <- function(p=scalaNull("parameter.partition.Partition[PersistentReference]"),
-                      sm=scalaNull("parameter.SamplingModel[PersistentReference]"),
+  sampler <- function(p=scalaNull("Partition[PersistentReference]"),
+                      sm=scalaNull("SamplingModel[PersistentReference]"),
                       pm=scalaNull("distribution.EwensPitmanAttraction[PersistentReference]"),
                       rdg=scalaNull("RDG"),
                       progressBar=NULL, showProgressBar=TRUE) s %.!% '
     val nDraws = R.getI0("n.draws")
     val monitor = mcmc.AcceptanceRateMonitor()
-    var samples = new scala.collection.mutable.ListBuffer[parameter.partition.Partition[PersistentReference]]()
+    var samples = new scala.collection.mutable.ListBuffer[Partition[PersistentReference]]()
     var partition = p
     var counter = 0
     for ( i <- 1 to nDraws ) {
@@ -730,7 +730,7 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
 # Make probability mass function.
 partition.pmf <- function(x) {
   distribution <- .partitionModel(x)
-  pmf <- distribution$logProbability(scalaNull("parameter.partition.Partition[PersistentReference]"),.EVALUATE=FALSE)
+  pmf <- distribution$logProbability(scalaNull("Partition[PersistentReference]"),.EVALUATE=FALSE)
   function(x, log=TRUE) {
     partition <- if ( is.vector(x) ) .labels2partition(x,.nullModel())
     else if ( is.list(x) ) .partition2partition(x)
@@ -744,7 +744,7 @@ partition.pmf <- function(x) {
 
 # Serialize partitions to R.
 serializePartitions <- function(ref, as.matrix, sample.parameter) {
-  withParameters <- ( ! is.null(sample.parameter) ) && ( ref[['type']] != "List[org.ddahl.shallot.parameter.partition.Partition[Null]]" )
+  withParameters <- ( ! is.null(sample.parameter) ) && ( ref$type != "List[org.ddahl.shallot.parameter.partition.Partition[Null]]" )
   if ( withParameters ) {
     zandp <- .partitionsToMatrixWithParameters(ref)
     z <- zandp$"_1"()
@@ -808,13 +808,13 @@ sampling.model <- function(sample.parameter, log.density) {
     val sp = R.evalReference(samplingModel+"$sample.parameter")
     val ld = R.evalReference(samplingModel+"$log.density")
 
-    new parameter.SamplingModel[PersistentReference] {
+    new SamplingModel[PersistentReference] {
 
-      def logDensity(i: Int, subset: parameter.partition.Subset[PersistentReference]): Double = {
+      def logDensity(i: Int, subset: Subset[PersistentReference]): Double = {
         R.invokeD0(ld, i+1, subset.toArray.map(_+1), subset.parameter)
       }
 
-      def sample(subset: parameter.partition.Subset[PersistentReference]): PersistentReference = {
+      def sample(subset: Subset[PersistentReference]): PersistentReference = {
         R.invokeReference(sp, subset.toArray.map(_+1), subset.parameter)
       }
 
@@ -848,13 +848,13 @@ process.partitions <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter
 
 
 # Null sampling model
-.nullModel <- function() s %.!% 'new parameter.GeneralNullSamplingModel[PersistentReference]()'
+.nullModel <- function() s %.!% 'new GeneralNullSamplingModel[PersistentReference]()'
 
 
 
 # Pairwise Probabilities
 enumerate.partitions <- function(n.items, as.matrix=TRUE) {
-  ref <- s$.parameter.partition.Partition$enumerate(.nullModel(),as.integer(n.items)[1])
+  ref <- s$.Partition$enumerate(.nullModel(),as.integer(n.items)[1])
   serializePartitions(ref, as.matrix=as.matrix, sample.parameter=NULL)
 }
 
@@ -864,7 +864,7 @@ enumerate.partitions <- function(n.items, as.matrix=TRUE) {
 pairwise.probabilities <- function(x, parallel=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   start.time <- proc.time()
-  ref <- s$.parameter.partition.PairwiseProbability$apply(x$ref,as.logical(parallel))
+  ref <- s$.PairwiseProbability$apply(x$ref,as.logical(parallel))
   result <- list(ref=ref,n.items=ref$nItems(),names=x$names,proc.time=proc.time()-start.time)
   structure(result, class="shallot.pairwiseProbability")
 }
@@ -883,7 +883,7 @@ as.matrix.shallot.pairwiseProbability <- function(x, ...) {
 estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, max.scans=0, parallel=TRUE) {
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
   if ( is.null(pairwise.probabilities) ) pairwise.probabilities <- pairwise.probabilities(x)
-  ref <- s$.parameter.partition.MinBinder$apply(
+  ref <- s$.MinBinder$apply(
       pairwise.probabilities$ref, x$ref, as.integer(max.subsets), as.integer(max.scans), as.logical(parallel))
   structure(ref$toLabels(), names=x$names)
 }
@@ -891,8 +891,8 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
 
 
 # Confidence
-.labels2partition <- function(partition=integer(), samplingModel=scalaNull("parameter.SamplingModel[PersistentReference]")) s %.!% '
-  parameter.partition.Partition(samplingModel,partition)
+.labels2partition <- function(partition=integer(), samplingModel=scalaNull("SamplingModel[PersistentReference]")) s %.!% '
+  Partition(samplingModel,partition)
 '
 
 .partition2partition <- function(partition) {
@@ -919,7 +919,7 @@ confidence <- function(pairwise.probabilities, partition) {
 
 
 # Confidence or pairs plot
-.rotateForConfidencePlot <- function(pp=scalaNull("parameter.partition.PairwiseProbability"), order=integer()) s %!% '
+.rotateForConfidencePlot <- function(pp=scalaNull("PairwiseProbability"), order=integer()) s %!% '
   val nItems = pp.nItems
   val xx = Array.ofDim[Double](nItems, nItems)
   for (i <- 0 until nItems) {
