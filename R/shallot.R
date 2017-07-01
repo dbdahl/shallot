@@ -677,6 +677,10 @@ print.shallot.samples.raw <- function(x, ...) {
   cat("raw partition samples --- use the 'process.partition' function to extract information\n")
 }
 
+print.shallot.samples.full <- function(x, ...) {
+  cat("raw partition samples with hyperparameter values --- use the 'process.partition' function to extract information\n")
+}
+
 
 
 # Posterior simulation via MCMC.
@@ -742,16 +746,20 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
         R.invoke("setTxtProgressBar",progressBar,counter)
       }
     }
-    samplesPartition.toList
+    (samplesPartition.toList, samplesHyperparameters.toArray, sampler.labels)
   '
   sm <- .samplingModel(sampling.model)
   pm <- .partitionModel(partition.model, sm)
   p <- .labels2partition(partition, sm)
   rdg <- .rdg()
   pb <- if ( progress.bar ) txtProgressBar(min=0, max=100, style=3) else NULL
-  ref <- sampler(p,sm,pm,partition.model,rdg,pb,progress.bar)
+  full <- sampler(p,sm,pm,partition.model,rdg,pb,progress.bar)
   if ( progress.bar ) close(pb)
-  structure(list(ref=ref, names=partition.model$names), class="shallot.samples.raw")
+  raw <- structure(list(ref=full$"_1"(), names=partition.model$names), class="shallot.samples.raw")
+  hyperparameters <- full$"_2"()
+  colnames(hyperparameters) <- full$"_3"()
+  hyperparameters <- as.data.frame(hyperparameters)
+  structure(list(raw=raw, hyperparameters=hyperparameters), class="shallot.samples.full")
 }
 
 
@@ -873,7 +881,8 @@ sampling.model <- function(sample.parameter, log.density) {
 
 # Process partitions that were sampled.
 process.partitions <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter=FALSE) {
-  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
+  if ( inherits(x,"shallot.samples.full") ) x <- x$raw
+  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the functions 'sample.partition' or 'sample.partition.posterior'.")
   result <- serializePartitions(x$ref, as.matrix, sample.parameter)
   if ( expand ) {
     if ( identical(sample.parameter,NULL) ) stop("'sample.parameter' may not be null when 'expand=TRUE'.")
@@ -905,7 +914,8 @@ enumerate.partitions <- function(n.items, as.matrix=TRUE) {
 
 # Pairwise Probabilities
 pairwise.probabilities <- function(x, parallel=TRUE) {
-  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
+  if ( inherits(x,"shallot.samples.full") ) x <- x$raw
+  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the functions 'sample.partition' or 'sample.partition.posterior'.")
   start.time <- proc.time()
   ref <- s$.PairwiseProbability$apply(x$ref,as.logical(parallel))
   result <- list(ref=ref,n.items=ref$nItems(),names=x$names,proc.time=proc.time()-start.time)
@@ -924,7 +934,8 @@ as.matrix.shallot.pairwiseProbability <- function(x, ...) {
 
 # Estimate partition
 estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, max.scans=0, parallel=TRUE) {
-  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the 'sample.partition' function.")
+  if ( inherits(x,"shallot.samples.full") ) x <- x$raw
+  if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the functions 'sample.partition' or 'sample.partition.posterior'.")
   if ( is.null(pairwise.probabilities) ) pairwise.probabilities <- pairwise.probabilities(x)
   ref <- s$.MinBinder$apply(
       pairwise.probabilities$ref, x$ref, as.integer(max.subsets), as.integer(max.scans), as.logical(parallel))
