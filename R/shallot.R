@@ -700,38 +700,42 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
     val sampler: Sampler = new Sampler {
       var _partition = p
       var _distribution = pm
-      val monitorMass = if ( R.evalL0(pmR+"$mass$fixed") ) null else AcceptanceRateMonitor()
+      val updateMass = ! R.evalL0(pmR+"$mass$fixed")
+      val monitorMass = AcceptanceRateMonitor()
       val massShape = R.evalD0(pmR+"$mass$shape")
       val massRate = R.evalD0(pmR+"$mass$rate")
       val massRWSD = 0.3  // This should be user-specifiable
-      val monitorDiscount = if ( R.evalL0(pmR+"$discount$fixed") ) null else AcceptanceRateMonitor()
+      val updateDiscount = ! R.evalL0(pmR+"$discount$fixed")
+      val monitorDiscount = AcceptanceRateMonitor()
       val discountShape1 = R.evalD0(pmR+"$discount$shape1")
       val discountShape2 = R.evalD0(pmR+"$discount$shape2")
       val discountRWSD = 0.05  // This should be user-specifiable
-      val monitorPermutation = if ( R.evalL0(pmR+"$attraction$permutation$fixed") ) null else AcceptanceRateMonitor()
+      val updatePermutation = ! R.evalL0(pmR+"$attraction$permutation$fixed")
+      val monitorPermutation = AcceptanceRateMonitor()
       val k = R.evalI0(pmR+"$n.items")  // This should be user-specifiable
-      val monitorTemperature = if ( R.evalL0(pmR+"$attraction$decay$temperature$fixed") ) null else AcceptanceRateMonitor()
+      val updateTemperature = ! R.evalL0(pmR+"$attraction$decay$temperature$fixed")
+      val monitorTemperature = AcceptanceRateMonitor()
       val temperatureShape = R.evalD0(pmR+"$attraction$decay$temperature$shape")
       val temperatureRate = R.evalD0(pmR+"$attraction$decay$temperature$rate")
       val temperatureRWSD = 0.1  // This should be user-specifiable
       def next() = {
         _partition = AuxiliaryGibbsSampler(_partition, sm, _distribution, rdg)._1
-        if ( monitorMass != null ) {
+        if ( updateMass ) {
           _distribution = monitorMass(MassSampler.gaussianRandomWalk(_distribution, _partition, massShape, massRate, massRWSD, rdg))
         }
-        if ( monitorDiscount != null ) {
+        if ( updateDiscount ) {
           _distribution = monitorDiscount(DiscountSampler.gaussianRandomWalk(_distribution, _partition, discountShape1, discountShape2, discountRWSD, rdg))
         }
-        if ( monitorPermutation != null ) {
+        if ( updatePermutation ) {
           _distribution = monitorPermutation(PermutationSampler.update(_distribution, _partition, k, rdg, Set()))
         }
-        if ( monitorTemperature != null ) {
+        if ( updateTemperature ) {
           _distribution = monitorTemperature(TemperatureSampler.gaussianRandomWalk(_distribution, _partition, temperatureShape, temperatureRate, temperatureRWSD, rdg))
         }
       }
       def partition = _partition
-      def hyperparameters = Array(_distribution.mass.value, _distribution.discount.value, _distribution.attraction.decay.temperature)
-      def labels = Array("mass","discount","temperature")
+      def hyperparameters = Array(_distribution.mass.value, _distribution.discount.value, _distribution.attraction.decay.temperature, monitorMass.rate, monitorDiscount.rate, monitorPermutation.rate, monitorTemperature.rate)
+      def labels = Array("mass","discount","temperature","rate.mass","rate.discount","rate.permutation","rate.temperature")
     }
     val nDraws = R.getI0("n.draws")
     val samplesPartition = new scala.collection.mutable.ListBuffer[Partition[PersistentReference]]()
