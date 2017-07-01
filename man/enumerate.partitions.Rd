@@ -20,7 +20,7 @@ represents a clusterings, or ii. a list containing partitions.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{process.partitions}}
+\code{\link{process.samples}}
 }
 \examples{
 \dontrun{

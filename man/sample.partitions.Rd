@@ -16,7 +16,7 @@ sample.partitions(x, n.draws, parallel = TRUE)
 \item{...}{Currently ignored.}
 }
 \value{
-An object of class \code{shallot.samples.raw} which can be subsequently be used in \code{\link{process.partitions}}, \code{\link{pairwise.probabilities}}, \code{\link{estimate.partition}},  
+An object of class \code{shallot.samples.raw} which can be subsequently be used in \code{\link{process.samples}}, \code{\link{pairwise.probabilities}}, \code{\link{estimate.partition}},  
 }
 \note{
 If this function is interrupted by the user, the computation engine will be broken and subsequent calls to package functions may fail until a new \R session is started.
@@ -24,7 +24,7 @@ If this function is interrupted by the user, the computation engine will be brok
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
 \code{\link{partition.distribution}},
-\code{\link{process.partitions}},
+\code{\link{process.samples}},
 \code{\link{pairwise.probabilities}},
 \code{\link{estimate.partition}}
 }

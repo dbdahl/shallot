@@ -20,8 +20,8 @@ A partition as a vector of cluster labels.
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{process.partitions}},
 \code{\link{sample.partitions}},
+\code{\link{process.samples}},
 \code{\link{plot.partition}},
 \code{\link{adj.rand.index}}
 }

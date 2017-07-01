@@ -1,11 +1,11 @@
-\name{process.partitions}
-\alias{process.partitions}
+\name{process.samples}
+\alias{process.samples}
 \title{Process Sampled Partitions}
 \description{
 This function extracts the partitions from the results of the \code{\link{sample.partitions} function.}
 }
 \usage{
-process.partitions(x, as.matrix = TRUE, expand = FALSE, sample.parameter = FALSE)
+process.samples(x, as.matrix = TRUE, expand = FALSE, sample.parameter = FALSE)
 }
 \arguments{
 \item{x}{An object from the \code{\link{sample.partitions}} function.}
