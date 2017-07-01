@@ -684,29 +684,72 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
   sampler <- function(p=scalaNull("Partition[PersistentReference]"),
                       sm=scalaNull("SamplingModel[PersistentReference]"),
                       pm=scalaNull("EwensPitmanAttraction[PersistentReference]"),
+                      pmR=NULL,
                       rdg=scalaNull("RDG"),
                       progressBar=NULL, showProgressBar=TRUE) s %.!% '
+    abstract class Sampler {
+      def next(): Unit
+      def partition: Partition[PersistentReference]
+      def hyperparameters: Array[Double]
+      def labels: Array[String]
+    }
+    val sampler: Sampler = new Sampler {
+      var _partition = p
+      var _distribution = pm
+      val monitorMass = if ( R.evalL0(pmR+"$mass$fixed") ) null else AcceptanceRateMonitor()
+      val massShape = R.evalD0(pmR+"$mass$shape")
+      val massRate = R.evalD0(pmR+"$mass$rate")
+      val massRWSD = 0.3  // This should be user-specifiable
+      val monitorDiscount = if ( R.evalL0(pmR+"$discount$fixed") ) null else AcceptanceRateMonitor()
+      val discountShape1 = R.evalD0(pmR+"$discount$shape1")
+      val discountShape2 = R.evalD0(pmR+"$discount$shape2")
+      val discountRWSD = 0.05  // This should be user-specifiable
+      val monitorPermutation = if ( R.evalL0(pmR+"$attraction$permutation$fixed") ) null else AcceptanceRateMonitor()
+      val k = R.evalI0(pmR+"$n.items")  // This should be user-specifiable
+      val monitorTemperature = if ( R.evalL0(pmR+"$attraction$decay$temperature$fixed") ) null else AcceptanceRateMonitor()
+      val temperatureShape = R.evalD0(pmR+"$attraction$decay$temperature$shape")
+      val temperatureRate = R.evalD0(pmR+"$attraction$decay$temperature$rate")
+      val temperatureRWSD = 0.1  // This should be user-specifiable
+      def next() = {
+        _partition = AuxiliaryGibbsSampler(_partition, sm, _distribution, rdg)._1
+        if ( monitorMass != null ) {
+          _distribution = monitorMass(MassSampler.gaussianRandomWalk(_distribution, _partition, massShape, massRate, massRWSD, rdg))
+        }
+        if ( monitorDiscount != null ) {
+          _distribution = monitorDiscount(DiscountSampler.gaussianRandomWalk(_distribution, _partition, discountShape1, discountShape2, discountRWSD, rdg))
+        }
+        if ( monitorPermutation != null ) {
+          _distribution = monitorPermutation(PermutationSampler.update(_distribution, _partition, k, rdg, Set()))
+        }
+        if ( monitorTemperature != null ) {
+          _distribution = monitorTemperature(TemperatureSampler.gaussianRandomWalk(_distribution, _partition, temperatureShape, temperatureRate, temperatureRWSD, rdg))
+        }
+      }
+      def partition = _partition
+      def hyperparameters = Array(_distribution.mass.value, _distribution.discount.value, _distribution.attraction.decay.temperature)
+      def labels = Array("mass","discount","temperature")
+    }
     val nDraws = R.getI0("n.draws")
-    val monitor = mcmc.AcceptanceRateMonitor()
-    var samples = new scala.collection.mutable.ListBuffer[Partition[PersistentReference]]()
-    var partition = p
+    val samplesPartition = new scala.collection.mutable.ListBuffer[Partition[PersistentReference]]()
+    val samplesHyperparameters = new scala.collection.mutable.ListBuffer[Array[Double]]()
     var counter = 0
     for ( i <- 1 to nDraws ) {
-      partition = mcmc.AuxiliaryGibbsSampler(partition, sm, pm, rdg)._1
-      samples += partition
+      sampler.next() // AuxiliaryGibbsSampler(partition, sm, pm, rdg)._1
+      samplesPartition       += sampler.partition
+      samplesHyperparameters += sampler.hyperparameters
       if ( showProgressBar && ( 100*i % nDraws == 0 ) ) {
         counter += 1
         R.invoke("setTxtProgressBar",progressBar,counter)
       }
     }
-    samples.toList
+    samplesPartition.toList
   '
   sm <- .samplingModel(sampling.model)
   pm <- .partitionModel(partition.model, sm)
   p <- .labels2partition(partition, sm)
   rdg <- .rdg()
   pb <- if ( progress.bar ) txtProgressBar(min=0, max=100, style=3) else NULL
-  ref <- sampler(p,sm,pm,rdg,pb,progress.bar)
+  ref <- sampler(p,sm,pm,partition.model,rdg,pb,progress.bar)
   if ( progress.bar ) close(pb)
   structure(list(ref=ref, names=partition.model$names), class="shallot.samples.raw")
 }
