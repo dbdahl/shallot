@@ -816,7 +816,7 @@ serializePartitions <- function(ref, as.matrix, sample.parameter) {
   if ( as.matrix) {
     z <- z+1L
     r <- list(labels=z,parameters=p)
-    structure(r, class="shallot.samples.labels")
+    list(partitions=structure(r, class="shallot.samples.labels"))
   } else {
     n.draws <- nrow(z)
     r <- vector(mode="list", length=n.draws)
@@ -831,7 +831,7 @@ serializePartitions <- function(ref, as.matrix, sample.parameter) {
       }
       r[[i]] <- rr
     }
-    structure(r, class="shallot.samples.partition")
+    list(partitons=structure(r, class="shallot.samples.partition"))
   }
 }
 
@@ -881,19 +881,23 @@ sampling.model <- function(sample.parameter, log.density) {
 
 # Process partitions that were sampled.
 process.partitions <- function(x, as.matrix=TRUE, expand=FALSE, sample.parameter=FALSE) {
-  if ( inherits(x,"shallot.samples.full") ) x <- x$raw
+  if ( inherits(x,"shallot.samples.full") ) {
+    result <- process.partitions(x$raw, as.matrix=as.matrix, expand=expand, sample.parameter=sample.parameter)
+    result[['hyperparameters']] <- x$hyperparameters
+    return(result)
+  }
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the functions 'sample.partition' or 'sample.partition.posterior'.")
   result <- serializePartitions(x$ref, as.matrix, sample.parameter)
   if ( expand ) {
     if ( identical(sample.parameter,NULL) ) stop("'sample.parameter' may not be null when 'expand=TRUE'.")
     if ( ! as.matrix ) stop("'expand=TRUE' is only valid when 'as.matrix=TRUE'.")
-    mega <- matrix(NA,nrow=nrow(result$labels),ncol=ncol(result$labels))
+    mega <- matrix(NA,nrow=nrow(result$partitions$labels),ncol=ncol(result$partitions$labels))
     for ( i in 1:nrow(mega) ) {
-      rhs <- result$parameters[[i]]
+      rhs <- result$partitions$parameters[[i]]
       if ( ! is.vector(rhs) ) stop("'expand=TRUE' is only valid when all the parameters are scalars.")
-      mega[i, ] <- rhs[result$labels[i,]]
+      mega[i, ] <- rhs[result$partitions$labels[i,]]
     }
-    mega
+    list(partitions=mega)
   } else result
 }
 
