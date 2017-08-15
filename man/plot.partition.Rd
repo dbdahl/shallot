@@ -24,8 +24,8 @@ The \code{\link{confidence}} function outputs an object of class \code{shallot.c
 }
 \author{David B. Dahl \email{dahl@stat.byu.edu}}
 \seealso{
-\code{\link{sample.partition}},
-\code{\link{process.partition}},
+\code{\link{sample.partitions}},
+\code{\link{process.samples}},
 \code{\link{estimate.partition}}
 }
 \examples{

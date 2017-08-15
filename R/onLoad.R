@@ -1,7 +1,12 @@
 .onLoad <- function(libname, pkgname) {
   snippet <- '
-    import org.ddahl.shallot._
     import org.apache.commons.math3.random.{ RandomDataGenerator => RDG }
+    import org.ddahl.shallot._
+    import parameter._
+    import parameter.decay._
+    import parameter.partition._
+    import distribution._
+    import mcmc._
 
     def rdg() = {
       val ints = R.evalI1("runif(2,-.Machine$integer.max,.Machine$integer.max)")
