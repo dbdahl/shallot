@@ -1,8 +1,10 @@
-0.3.3 (201x-xx-xx)
+0.4.0 (2017-08-22)
+  * Added function sample.partitions.posterior to do posterior sampling.
   * Added partition.pmf function that returns the probability mass function.
   * Added enumerate.partitions function.
   * Renamed functions sample.partition & process.partitions to
     sample.partitions & process.partitions.
+  * Updated to the lastest version of rscala.
 
 0.3.2 (2017-05-24)
   * Spin down the Scala interpreter/compiler when the package is unloaded using
