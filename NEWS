@@ -1,3 +1,6 @@
+0.4.1 (2017-08-24)
+  * Minor update to correctly describe the package functionality.
+
 0.4.0 (2017-08-22)
   * Added function sample.partitions.posterior to do posterior sampling.
   * Added partition.pmf function that returns the probability mass function.
