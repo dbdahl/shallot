@@ -674,11 +674,11 @@ sample.partitions <- function(x, n.draws, parallel=TRUE) {
 }
 
 print.shallot.samples.raw <- function(x, ...) {
-  cat("raw partition samples --- use the 'process.partition' function to extract information\n")
+  cat("raw partition samples --- use the 'process.samples' function to extract information\n")
 }
 
 print.shallot.samples.full <- function(x, ...) {
-  cat("raw partition samples with hyperparameter values --- use the 'process.partition' function to extract information\n")
+  cat("raw partition samples with hyperparameter values --- use the 'process.samples' function to extract information\n")
 }
 
 
