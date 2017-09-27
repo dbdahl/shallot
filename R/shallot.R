@@ -54,11 +54,11 @@ mass <- function(...,fixed=TRUE) {
 }
 
 # Not exported:  Mass wrapper
-.mass <- function(mass=NULL) s %.!% '
+.mass <- function(mass) s %.!% '
   Mass(R.evalD0(mass+"$value"))
 '
 
-.massFactory <- function(mass=NULL) s %.!% '
+.massFactory <- function(mass) s %.!% '
   if ( R.evalL0(mass+"$fixed")  ) {
     Mass.factory(R.evalD0(mass+"$value"))
   } else {
@@ -103,11 +103,11 @@ discount <- function(...,fixed=TRUE) {
 }
 
 # Not exported:  Discount wrapper 
-.discount <- function(discount=NULL) s %.!% '
+.discount <- function(discount) s %.!% '
   Discount(R.evalD0(discount+"$value"))
 '
 
-.discountFactory <- function(discount=NULL) s %.!% '
+.discountFactory <- function(discount) s %.!% '
   if ( R.evalL0(discount+"$fixed")  ) {
     Discount.factory(R.evalD0(discount+"$value"))
   } else {
@@ -647,16 +647,19 @@ nsubsets.variance <- function(x) {
   (labels, parameters)
 '
 
-.sampleForward <- function(nSamples=0L, rdg=scalaNull('RDG'), sampler=scalaNull('Function2[Int, RDG, List[Partition[Null]]]'), parallel=TRUE) s %.!% '
-  if (!parallel) sampler(nSamples, rdg)
-  else {
-    val nCores = Runtime.getRuntime.availableProcessors
-    val nSamplesPerCore = (nSamples / nCores) + 1
-    val randomGenerator = rdg.getRandomGenerator
-    val rdgList = List.fill(nCores) { new RDG(randomGenerator) }
-    rdgList.par.map(r => sampler(nSamplesPerCore, r)).toList.flatten
-  }
-'
+.sampleForward <- function(nSamples, rdg=scalaNull('RDG'), sampler=scalaNull('Function2[Int, RDG, List[Partition[Null]]]'), parallel=TRUE) {
+  nSamples <- as.integer(nSamples)
+  s %.!% '
+    if (!parallel) sampler(nSamples, rdg)
+    else {
+      val nCores = Runtime.getRuntime.availableProcessors
+      val nSamplesPerCore = (nSamples / nCores) + 1
+      val randomGenerator = rdg.getRandomGenerator
+      val rdgList = List.fill(nCores) { new RDG(randomGenerator) }
+      rdgList.par.map(r => sampler(nSamplesPerCore, r)).toList.flatten
+    }
+  '
+}
 
 # Sample partitions.
 sample.partitions <- function(x, n.draws, parallel=TRUE) {
@@ -691,7 +694,7 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
                       pmR=NULL,
                       pmType="",
                       rdg=scalaNull("RDG"),
-                      progressBar=NULL, showProgressBar=TRUE) s %.!% '
+                      progressBar, showProgressBar=TRUE) s %.!% '
     val nDraws = R.getI0("n.draws")
     val k = R.evalI0("k")
     val massRWSD = R.evalD0("massRWSD")
@@ -807,7 +810,7 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
   p <- .labels2partition(partition, sm)
   rdg <- .rdg()
   pb <- if ( progress.bar ) txtProgressBar(min=0, max=100, style=3) else NULL
-  full <- sampler(p,sm,pm,partition.model,pm$type,rdg,pb,progress.bar)
+  full <- sampler(p,sm,pm,partition.model,pm$type,rdg,II(pb),progress.bar)
   if ( progress.bar ) close(pb)
   raw <- structure(list(ref=full$"_1"(), names=partition.model$names), class="shallot.samples.raw")
   hyperparameters <- full$"_2"()
@@ -910,7 +913,7 @@ sampling.model <- function(sample.parameter, log.density) {
   structure(r, class="shallot.distribution.data")
 }
 
-.samplingModel <- function(samplingModel=NULL) {
+.samplingModel <- function(samplingModel) {
   s %.!% '
     val sp = R.evalReference(samplingModel+"$sample.parameter")
     val ld = R.evalReference(samplingModel+"$log.density")
@@ -1006,9 +1009,12 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
 
 
 # Confidence
-.labels2partition <- function(partition=integer(), samplingModel=scalaNull("SamplingModel[PersistentReference]")) s %.!% '
-  Partition(samplingModel,partition)
-'
+.labels2partition <- function(partition, samplingModel=scalaNull("SamplingModel[PersistentReference]")) {
+  partition <- as.integer(partition)
+  s %.!% '
+    Partition(samplingModel,partition)
+  '
+}
 
 .partition2partition <- function(partition) {
   stop("Not yet implemented.")
@@ -1107,5 +1113,9 @@ plot.shallot.confidence <- function(x, partition=NULL, data=NULL, show.labels=le
   }
   par(opar)
   invisible()
+}
+
+latest <- function() {
+  install.packages('https://dahl.byu.edu/public/shallot_LATEST.tar.gz',repos=NULL,type='source')
 }
 
