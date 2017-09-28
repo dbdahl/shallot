@@ -810,7 +810,7 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
   p <- .labels2partition(partition, sm)
   rdg <- .rdg()
   pb <- if ( progress.bar ) txtProgressBar(min=0, max=100, style=3) else NULL
-  full <- sampler(p,sm,pm,partition.model,pm$type,rdg,II(pb),progress.bar)
+  full <- sampler(p,sm,pm,partition.model,pm$type,rdg,pb,progress.bar)
   if ( progress.bar ) close(pb)
   raw <- structure(list(ref=full$"_1"(), names=partition.model$names), class="shallot.samples.raw")
   hyperparameters <- full$"_2"()
