@@ -36,7 +36,7 @@ If this function is interrupted by the user, the computation engine will be brok
 \code{\link{sample.partitions}}
 }
 \examples{
-\dontrun{
+\donttest{
 mass <- mass(1.0, fixed=TRUE)
 discount <- discount(0.05, fixed=TRUE)
 distance <- dist(scale(USArrests[1:9,]))
