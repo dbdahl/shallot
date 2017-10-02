@@ -15,14 +15,14 @@
       r.reSeed(seed)
       r
     }
+
+    // This circumvents a bug in the class loader on some versions of Scala/JVM.
+    scala.util.Try {
+      new org.apache.commons.math3.random.EmpiricalDistribution()
+    }
   '
   ## Users may want to use 'options(rscala.heap.maximum="2G")'.
   .rscalaPackage(pkgname,classpath.packages="commonsMath",snippet=snippet)
-  ## This circumvents a bug in the class loader of Scala 2.11.x.
-  sInfo <- scalaInfo()
-  if ( ( ! is.null(sInfo) ) ) { #  && ( sInfo$major.release == "2.11" ) ) {
-    s$.org.apache.commons.math3.random.EmpiricalDistribution$new()
-  }
 }
 
 .onUnload <- function(libpath) {
