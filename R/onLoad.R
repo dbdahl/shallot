@@ -24,8 +24,3 @@
   ## Users may want to use 'options(rscala.heap.maximum="2G")'.
   .rscalaPackage(pkgname,classpath.packages="commonsMath",snippet=snippet)
 }
-
-.onUnload <- function(libpath) {
-  .rscalaPackageUnload()
-}
-
