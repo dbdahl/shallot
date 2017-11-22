@@ -22,7 +22,7 @@
     }
   '
   ## Users may want to use 'options(rscala.heap.maximum="2G")'.
-  .rscalaPackage(pkgname,classpath.packages="commonsMath",snippet=snippet)
+  .rscalaPackage(pkgname,snippet=snippet,mode="sdols:::s")
 }
 
 .onUnload <- function(libpath) {

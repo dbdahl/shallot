@@ -1012,7 +1012,7 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
 .labels2partition <- function(partition, samplingModel=scalaNull("SamplingModel[PersistentReference]")) {
   partition <- as.integer(partition)
   s %.!% '
-    Partition(samplingModel,partition)
+    Partition(() => samplingModel.sample(),partition)
   '
 }
 
