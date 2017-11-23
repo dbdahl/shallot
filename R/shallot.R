@@ -1007,8 +1007,7 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
 }
 
 
-
-# Confidence
+# Misc
 .labels2partition <- function(partition, samplingModel=scalaNull("SamplingModel[PersistentReference]")) {
   partition <- as.integer(partition)
   s %.!% '
@@ -1020,102 +1019,12 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
   stop("Not yet implemented.")
 }
 
-confidence <- function(pairwise.probabilities, partition) {
-  tmpObj <- pairwise.probabilities$ref$confidenceComputations(.labels2partition(partition,.nullModel()))
-  partition <- tmpObj$"_1"() + 1
-  names(partition) <- pairwise.probabilities$names
-  confidence <- tmpObj$"_2"()
-  names(confidence) <- names(partition)
-  confidence.matrix <- tmpObj$"_3"()
-  dimnames(confidence.matrix) <- list(1:nrow(confidence.matrix),1:ncol(confidence.matrix))
-  order <- tmpObj$"_4"() + 1L
-  names(order) <- names(partition)
-  exemplar <- tmpObj$"_5"() + 1L
-  names(exemplar) <- 1:length(exemplar)
-  result <- list(partition=partition,confidence=confidence,confidence.matrix=confidence.matrix,exemplar=exemplar,order=order,pairwise.probabilities=pairwise.probabilities)
-  class(result) <- "shallot.confidence"
-  result
-}
-
-
-
-# Confidence or pairs plot
-.rotateForConfidencePlot <- function(pp=scalaNull("PairwiseProbability"), order=integer()) s %!% '
-  val nItems = pp.nItems
-  val xx = Array.ofDim[Double](nItems, nItems)
-  for (i <- 0 until nItems) {
-    for (j <- 0 until nItems) {
-      xx(i)(nItems - j - 1) = pp(order(i) - 1, order(j) - 1)
-    }
-  }
-  xx
-'
-
-plot.shallot.confidence <- function(x, partition=NULL, data=NULL, show.labels=length(x$partition)<=50, ...) {
-  if ( ! is.null(data) ) {
-    if ( ! is.null(partition) ) stop("'partition' must be 'NULL' for pairs plot.")
-    i <- x$exemplar[x$partition]
-    c <- rainbow(length(x$exemplar))[x$partition]
-    panelFnc <- function(x0,y0,...) {
-      points(x0,y0,col=c,pch=19,...)
-      segments(x0,y0,x0[i],y0[i],col=c,...)
-      points(x0[x$exemplar],y0[x$exemplar],pch=22,bg="white",cex=2,...)
-    }
-    pairs(data,panel=panelFnc)
-    return(invisible())
-  }
-  if ( is.null(partition) ) {
-    partition <- x$partition
-    o <- x$order
-  } else {
-    o <- order(partition)
-  }
-  pm <- .rotateForConfidencePlot(x$pairwise.probabilities$ref,o)
-  n <- nrow(pm)
-  sizes <- rle(partition[o])$lengths
-  cuts <- cumsum(sizes)
-  centers <- ( c(0,cuts[-length(cuts)]) + cuts ) / 2
-  cuts <- cuts[-length(cuts)]
-  labels <- rle(partition[o])$values
-  if ( show.labels ) {
-    mymai <- c(1.5,0.5,0.5,1.5)
-    cexscale <- 0.85 * 50 / length(partition)
-  } else {
-    mymai <- c(0,0,0,0)
-    cexscale <- 1 * 50 / length(partition)
-  }
-  opar <- par(pty="s",mai=mymai)
-  colors <- topo.colors(200)
-  colors <- rev(heat.colors(200))
-  image(x=1:n,y=1:n,z=pm,axes=FALSE,xlab="",ylab="",col=colors)
-  box()
-  abline(v=cuts+0.5,lwd=3)
-  abline(h=n-cuts+0.5,lwd=3)
-  text(centers+0.5,n-centers+0.5,labels,cex=0.8*cexscale*sizes)
-  if ( show.labels ) {
-    axisLabels <- if ( is.null(names(partition)) ) o
-    else names(partition[o])
-    axis(4,1:length(partition),rev(axisLabels),las=2,cex.axis=0.8*cexscale)
-    axis(1,1:length(partition),axisLabels,las=2,cex.axis=0.8*cexscale)
-    nn <- length(colors)
-    bx <- par("usr")
-    bx.cx <- c(bx[1] - 1.6 * (bx[2] - bx[1]) / 50, bx[1] - 0.3 * (bx[2] - bx[1]) / 50)
-    bx.cy <- c(bx[3], bx[3])
-    bx.sy <- (bx[4] - bx[3]) / nn
-    xx <- rep(bx.cx, each=2)
-    for ( i in 1:nn ) {
-      yy <- c(bx.cy[1] + (bx.sy * (i - 1)),
-              bx.cy[1] + (bx.sy * (i)),
-              bx.cy[1] + (bx.sy * (i)),
-              bx.cy[1] + (bx.sy * (i - 1)))
-      polygon(xx,yy,col=colors[i],border=colors[i],xpd=TRUE)
-    }
-  }
-  par(opar)
-  invisible()
-}
-
 latest <- function() {
+  install.packages('https://dahl.byu.edu/public/rscala_latest.tar.gz',repos=null,type='source')
+  install.packages('https://dahl.byu.edu/public/commonsmath_latest.tar.gz',repos=null,type='source')
+  install.packages('https://dahl.byu.edu/public/sdols_latest.tar.gz',repos=null,type='source')
   install.packages('https://dahl.byu.edu/public/shallot_LATEST.tar.gz',repos=NULL,type='source')
+  cat("\n\n*******\n\nPlease restart your R session.\n\n*******\n")
+
 }
 

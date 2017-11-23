@@ -22,7 +22,6 @@ export(ewens.pitman.attraction)
 export(ddcrp)
 export(pairwise.probabilities)
 export(estimate.partition)
-export(confidence)
 export(nsubsets.random)
 export(nsubsets.probability)
 export(nsubsets.average)
@@ -51,6 +50,4 @@ S3method("print", "shallot.pairwiseProbability")
 
 S3method("as.matrix", "shallot.attraction")
 S3method("as.matrix", "shallot.pairwiseProbability")
-
-S3method("plot", "shallot.confidence")
 
