@@ -17,8 +17,7 @@ The Ewens, Ewens-Pitman, Ewens attraction, Ewens-Pitman attraction, and ddCRP di
 \seealso{
   \code{\link{ewens.pitman.attraction}},
   \code{\link{sample.partitions}},
-  \code{\link{estimate.partition}},
-  \code{\link{confidence}}
+  \code{\link{estimate.partition}}
 }
 \examples{
 \donttest{
@@ -36,13 +35,12 @@ distribution <- ewens.pitman.attraction(mass, discount, attraction)
 raw <- sample.partitions(distribution, 500, parallel=FALSE)
 samples <- process.samples(raw,as.matrix=TRUE)
 
-est <- estimate.partition(raw,max.subsets=3,max.scans=0, parallel=FALSE)
-pp <- pairwise.probabilities(raw, parallel=FALSE)
-
-conf <- confidence(pp,est)
+library(sdols)
+pp <- expectedPairwiseAllocationMatrix(samples$partitions$labels)
+est <- salso(pp)
+conf <- confidence(est,pp)
 plot(conf)
 plot(conf,data=data)
-adj.rand.index(est,truth)
 }
 }
 \keyword{package}

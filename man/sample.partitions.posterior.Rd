@@ -93,11 +93,12 @@ tail(samples.format1$hyperparameters)
 plot(data,apply(samples.format2$partitions,2,mean))
 abline(a=0,b=1)
 
-## Post processing to find the partition estimate.
-pp <- pairwise.probabilities(raw)
-est <- estimate.partition(raw, pp)
-plot(confidence(pp,est))
-
 samples.format1$hyperparameters
+
+## Post processing to find the partition estimate.
+library(sdols)
+pp <- expectedPairwiseAllocationMatrix(samples.format1$partition$labels)
+est <- salso(pp)
+plot(confidence(est,pp))
 }
 }

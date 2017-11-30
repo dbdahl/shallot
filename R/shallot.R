@@ -1020,9 +1020,9 @@ estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, ma
 }
 
 latest <- function() {
-  install.packages('https://dahl.byu.edu/public/rscala_latest.tar.gz',repos=null,type='source')
-  install.packages('https://dahl.byu.edu/public/commonsmath_latest.tar.gz',repos=null,type='source')
-  install.packages('https://dahl.byu.edu/public/sdols_latest.tar.gz',repos=null,type='source')
+  install.packages('https://dahl.byu.edu/public/rscala_latest.tar.gz',repos=NULL,type='source')
+  install.packages('https://dahl.byu.edu/public/commonsmath_latest.tar.gz',repos=NULL,type='source')
+  install.packages('https://dahl.byu.edu/public/sdols_latest.tar.gz',repos=NULL,type='source')
   install.packages('https://dahl.byu.edu/public/shallot_LATEST.tar.gz',repos=NULL,type='source')
   cat("\n\n*******\n\nPlease restart your R session.\n\n*******\n")
 
