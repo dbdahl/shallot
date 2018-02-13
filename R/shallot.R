@@ -861,6 +861,7 @@ serializePartitions <- function(ref, names, as.matrix, sample.parameter) {
     else {
       extractor <- function(x=scalaNull("Array[Array[String]]"),i=0L) s %!% 'x(i-1)'
       pp <- zandp$"_2"()
+      n.draws <- nrow(z)
       ppp <- vector(mode="list", length=n.draws)
       for ( i in 1:n.draws ) {
         ppp[[i]] <- sapply(extractor(pp,i), function(x) s$var(x), USE.NAMES=FALSE)
