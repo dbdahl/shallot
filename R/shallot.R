@@ -579,7 +579,7 @@ nsubsets.variance <- function(x) {
   s$.Ewens.apply(samplingModel,mass,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewens <- function(nItems=0L, massFactory=s$".null_() => Mass") s(nItems=as.integer(nItems[1]),massFactory=massFactory) ^ '
+.sample.ewens <- function(nItems, massFactory) s(nItems=as.integer(nItems[1]),massFactory=massFactory) ^ '
   val samplingModel = NullSamplingModel
   val partitionModelFactory = Ewens.factory(samplingModel,massFactory)
   PartitionModel.forwardSampler(nItems,partitionModelFactory)
@@ -591,7 +591,7 @@ nsubsets.variance <- function(x) {
   s$.EwensPitman.apply(samplingModel,mass,discount,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewensPitman <- function(nItems=0L, massFactory=s$".null_(() => Mass)"(), discountFactory=s$".null_(() => Discount)"()) s(nItems=as.integer(nItems[1]),massFactory=massFactory,discountFactory=discountFactory) ^ '
+.sample.ewensPitman <- function(nItems, massFactory, discountFactory) s(nItems=as.integer(nItems[1]),massFactory=massFactory,discountFactory=discountFactory) ^ '
   val samplingModel = NullSamplingModel
   val partitionModelFactory = EwensPitman.factory(samplingModel,massFactory,discountFactory)
   PartitionModel.forwardSampler(nItems,partitionModelFactory)
@@ -603,7 +603,7 @@ nsubsets.variance <- function(x) {
   s$.EwensAttraction.apply(samplingModel,mass,attraction,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewensAttraction <- function(nItems=0L, massFactory=s$".null_(() => Mass)"(), attractionFactory=s$".null_(() => Attraction)"()) s(nItems=as.integer(nItems[1]),massFactory=massFactory,attractionFactory=attractionFactory) ^ '
+.sample.ewensAttraction <- function(nItems, massFactory, attractionFactory) s(nItems=as.integer(nItems[1]),massFactory=massFactory,attractionFactory=attractionFactory) ^ '
   val samplingModel = NullSamplingModel
   val partitionModelFactory = EwensAttraction.factory(samplingModel,massFactory,attractionFactory)
   PartitionModel.forwardSampler(nItems,partitionModelFactory)
@@ -616,24 +616,24 @@ nsubsets.variance <- function(x) {
   s$.EwensPitmanAttraction.apply(samplingModel,mass,discount,attraction,.AS.REFERENCE=TRUE)
 }
 
-.sample.ewensPitmanAttraction <- function(nItems=0L, massFactory=s$".null_(() => Mass)"(), discountFactory=s$".null_(() => Discount)"(), attractionFactory=s$".null_(() => Attraction)"()) s(nItems=as.integer(nItems[1]),massFactory=massFactory,discountFactory=discountFactory,attractionFactory=attractionFactory) ^ '
+.sample.ewensPitmanAttraction <- function(nItems, massFactory, discountFactory, attractionFactory) s(nItems=as.integer(nItems[1]), massFactory=massFactory, discountFactory=discountFactory, attractionFactory=attractionFactory) ^ '
   val samplingModel = NullSamplingModel
   val partitionModelFactory = EwensPitmanAttraction.factory(samplingModel,massFactory,discountFactory,attractionFactory)
   PartitionModel.forwardSampler(nItems,partitionModelFactory)
 '
 
-.partitionsToMatrix <- function(x=s$".null_List[Partition[PersistentReference]]"()) s(x=x) * '
+.partitionsToMatrix <- function(x) s(x=x) * '
   x.map(_.toLabels).toArray
 '
 
-.partitionsToMatrixWithParameters <- function(x=s$".null_List[Partition[PersistentReference]]"()) s(x=x) ^ '
+.partitionsToMatrixWithParameters <- function(x) s(x=x) ^ '
   val labelsWithParameters = x.map(_.toLabelsWithParameters)
   val labels = labelsWithParameters.map(_._1).toArray
   val parameters = labelsWithParameters.map(_._2.map(_.toString)).toArray
   (labels, parameters)
 '
 
-.sampleForward <- function(nSamples, rdg=s$.null_RDG(), sampler=scalaNull('Function2[Int, RDG, List[Partition[Null]]]'), parallel=TRUE) {
+.sampleForward <- function(nSamples, rdg, sampler, parallel=TRUE) {
   s(nSamples=as.integer(nSamples), sampler=sampler, parallel=parallel) ^ '
     if (!parallel) sampler(nSamples, rdg)
     else {
