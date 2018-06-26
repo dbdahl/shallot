@@ -1,5 +1,5 @@
 .onLoad <- function(libname, pkgname) {
-  snippet <- '
+  callback <- function(s) s + '
     import org.apache.commons.math3.random.{ RandomDataGenerator => RDG }
     import org.ddahl.shallot._
     import parameter._
@@ -9,7 +9,7 @@
     import mcmc._
 
     def rdg() = {
-      val ints = R.evalI1("runif(2,-.Machine$integer.max,.Machine$integer.max)")
+      val ints = R.evalI1("as.integer(runif(2,-.Machine$integer.max,.Machine$integer.max))")
       val seed = ((ints(0).asInstanceOf[Long]) << 32) | (ints(1) & 0xffffffffL)
       val r = new RDG()
       r.reSeed(seed)
@@ -21,11 +21,13 @@
       new org.apache.commons.math3.random.EmpiricalDistribution()
     }
   '
-  ## Users may want to use 'options(rscala.heap.maximum="2G")'.
-  .rscalaPackage(pkgname,snippet=snippet,mode="sdols:::s")
+  scalaPackage(pkgname,callback,mode="sdols:::s")
 }
 
-.onUnload <- function(libpath) {
-  .rscalaPackageUnload()
-}
+## 
+## This function is not needed (but harmless) since this package borrows the bridge from another package.
+##
+# .onUnload <- function(libpath) {
+#   scalaPackageUnload()
+# }
 
