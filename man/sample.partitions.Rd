@@ -27,6 +27,7 @@ If this function is interrupted by the user, the computation engine will be brok
 \code{\link{process.samples}},
 \code{\link{pairwise.probabilities}},
 \code{\link{estimate.partition}}
+\code{\link{sample.partitions.posterior}}
 }
 \examples{
 \dontrun{
