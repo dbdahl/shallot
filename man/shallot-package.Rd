@@ -33,10 +33,10 @@ discount <- discount(0.2, fixed = TRUE)
 distribution <- ewens.pitman.attraction(mass, discount, attraction)
 
 raw <- sample.partitions(distribution, 500, parallel=FALSE)
-samples <- process.samples(raw,as.matrix=TRUE)
+samples <- process.samples(raw)
 
 library(sdols)
-pp <- expectedPairwiseAllocationMatrix(samples$partitions$labels)
+pp <- expectedPairwiseAllocationMatrix(samples$labels)
 est <- salso(pp)
 conf <- confidence(est,pp)
 plot(conf)

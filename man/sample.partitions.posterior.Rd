@@ -63,42 +63,51 @@ c <- -1.0 / (2.0 * s2)
 
 ## Sampling model of Neal (JCGS, 2009)
 ## Function to perform an MCMC update of the parameter.
-sample.parameter <- function(indices=c(), parameter=NULL) {
+sample.parameter <- function(indices=scalaType("D1"), parameter=scalaType("D0")) {
   sum <- sum(data[indices])
   variance <- 1 / (s02Inv + length(indices) / s2)
   mean <- variance * (mu0 / s02 + sum / s2)
-  rnorm(1, mean=mean, sd=sqrt(variance))
+  rnorm(1, mean, sqrt(variance))
 }
 
+library(rscala)
+s <- shallot:::s
+sample.parameter.compiled <- s(data=data,mu0=mu0,s2=s2,s02=s02,s02Inv=s02Inv) ^ sample.parameter
+
+
 ## Function to evaluate the likelihood contribution for an observation.
-log.density <- function(i, indices, parameter) {
+log.density <- function(i=scalaType("D0"), indices=scalaType("D1"), parameter=scalaType("D0")) {
   resid <- data[i] - parameter
   c * resid * resid
 }
+
+log.density.compiled <- s(data=data,c=c) ^ log.density
 
 sampling.model <- sampling.model(sample.parameter, log.density)
 
 ## Perform posterior sampling.
 initial.partition <- rep(1,length(data))
-n.draws <- 100
+n.draws <- 10
 raw <- sample.partitions.posterior(initial.partition,sampling.model,partition.distribution,
                                    massRWSD=3,temperatureRWSD=1,n.draws)
-samples.format1 <- process.samples(raw,as.matrix=TRUE)
-samples.format2 <- process.samples(raw,as.matrix=TRUE, expand=TRUE)
-samples.format3 <- process.samples(raw,as.matrix=FALSE)
+samples.format1 <- process.samples(raw)
+parameterMatrix <- t(sapply(seq_len(n.draws), function(i) {
+  unlist(samples.format1$parameters[[i]])[samples.format1$labels[i,]]
+}))
 
 tail(samples.format1$hyperparameters)
 
 ## Shrinkage to group means?
-plot(data,apply(samples.format2$partitions,2,mean))
+plot(data,apply(parameterMatrix,2,mean))
 abline(a=0,b=1)
 
 samples.format1$hyperparameters
 
 ## Post processing to find the partition estimate.
 library(sdols)
-pp <- expectedPairwiseAllocationMatrix(samples.format1$partition$labels)
+pp <- expectedPairwiseAllocationMatrix(samples.format1$labels)
 est <- salso(pp)
 plot(confidence(est,pp))
 }
 }
+
