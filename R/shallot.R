@@ -884,6 +884,10 @@ serializePartitions <- function(ref, names, as.matrix, sample.parameter) {
 
 # Sampling model
 sampling.model <- function(sample.parameter, log.density) {
+  
+}
+
+sampling.model <- function(sample.parameter, log.density) {
   if ( ! is.function(sample.parameter) ) stop("'sample.parameter' should be a function.")
   if ( length(formals(sample.parameter)) != 2 ) stop("'sample.parameter' should take two arguments named 'indices' and 'parameter'.")
   if ( ! identical(names(formals(sample.parameter)),c("indices","parameter")) )
