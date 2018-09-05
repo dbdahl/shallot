@@ -1,5 +1,7 @@
 .onLoad <- function(libname, pkgname) {
-  callback <- function(s) s + '
+  s <- sdols:::s
+  scalaJARs(pkgname)
+  scalaLazy(function(s) s + '
     import org.apache.commons.math3.random.{ RandomDataGenerator => RDG }
     import org.ddahl.shallot._
     import parameter._
@@ -20,14 +22,6 @@
     scala.util.Try {
       new org.apache.commons.math3.random.EmpiricalDistribution()
     }
-  '
-  scalaPackage(pkgname,callback,mode="sdols:::s")
+  ')
+  assign("s",s,envir=parent.env(environment()))  
 }
-
-## 
-## This function is not needed (but harmless) since this package borrows the bridge from another package.
-##
-# .onUnload <- function(libpath) {
-#   scalaPackageUnload()
-# }
-

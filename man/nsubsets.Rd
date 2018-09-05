@@ -46,5 +46,8 @@ nsubsets.average(pd)
 pde <- ewens(mass(1),50)
 nsubsets.variance(pde)
 nsubsets.probability(pde,4)
+\dontshow{
+rscala::scalaDisconnect(shallot:::s)
+}
 }
 }

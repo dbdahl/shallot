@@ -41,6 +41,10 @@ est <- salso(pp)
 conf <- confidence(est,pp)
 plot(conf)
 plot(conf,data=data)
+
+\dontshow{
+rscala::scalaDisconnect(shallot:::s)
+}
 }
 }
 \keyword{package}
