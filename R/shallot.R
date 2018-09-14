@@ -886,10 +886,10 @@ sampling.model <- function(sample.parameter, log.density) {
 process.samples <- function(x) {
   if ( ( ! inherits(x,"shallot.samples.raw") ) && ( ! inherits(x,"shallot.samples.full") ) ) stop("'x' should be a result from the functions 'sample.partitions' or 'sample.partitions.posterior'.")
   if ( inherits(x,"shallot.samples.full") ) {
-    result <- scalaUnserialize(x$raw$ref, names=x$raw$names, withParameters=TRUE)
+    result <- sdols:::scalaUnserialize.clustering(x$raw$ref, bridge=s, names=x$raw$names, withParameters=TRUE)
     result[['hyperparameters']] <- x$hyperparameters
   } else {
-    result <- scalaUnserialize(x$ref, names=x$names, withParameters=TRUE)
+    result <- sdols:::scalaUnserialize.clustering(x$ref, bridge=s, names=x$names, withParameters=TRUE)
   }
   result
 }
