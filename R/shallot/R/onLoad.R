@@ -1,6 +1,6 @@
 .onLoad <- function(libname, pkgname) {
   s <- sdols:::s
-  scalaJARs(pkgname)
+  scalaJARs(pkgname,s)
   scalaLazy(function(s) s + '
     import org.apache.commons.math3.random.{ RandomDataGenerator => RDG }
     import org.ddahl.shallot._
