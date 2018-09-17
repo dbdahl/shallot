@@ -1,0 +1,47 @@
+## Install shallot 0.3.2-1.  Since this version is not on CRAN yet, use the following...
+#> library(devtools)
+#> install_github("dbdahl/shallot")
+
+## Installing shallot will also install the rscala package.  The rscala package uses
+## Scala.  If Scala is not installed on your operating system, you can install it with...
+#> rscala::scalaInstall()
+
+## But you must install Java yourself (if it is not already installed).
+
+## Set the 'rscala.heap.maximum' if memory runs out, e.g.,
+#> options(rscala.heap.maximum="4g")
+
+library(shallot)
+
+mass <- mass(1.0)
+discount <- discount(0.0)
+
+## The number of items may be large.
+distance <- dist(rnorm(1000))
+
+## But make the number of items small for the sake of the enumeration below.
+distance <- dist(scale(USArrests[1:6,]))
+
+if ( min(distance[upper.tri(distance)],na.rm=TRUE) == 0 ) stop("Oops, distances must be strictly positive.")
+
+n.items <- attr(distance,"Size")
+permutation <- permutation(sample(1:n.items))  ## A random permutation.
+temperature <- temperature(2,4,fixed=FALSE)
+attraction <- attraction(permutation,decay.exponential(temperature,distance))
+
+partition.distribution <- ewens.pitman.attraction(mass, discount, attraction)
+
+## This returns the probability mass function of the specified distribution.
+pmf <- partition.pmf(partition.distribution)
+
+## For example, the log of the probability that all items are clustered together is...
+pmf(rep(1,length=partition.distribution$n.items))
+
+## Since n is small, let's enumerate all possible partitions and sum up their
+## probabilities, which is feasible because the number of items is very small.
+one <- if ( partition.distribution$n.items <= 8 ) {
+  all <- enumerate.partitions(partition.distribution$n.items)
+  sum(apply(all$partitions$labels,1,pmf,log=FALSE))
+}
+one
+

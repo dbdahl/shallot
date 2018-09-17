@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd $(dirname "$(readlink -f \"$0\")")/R/shallot/vignettes
+exec R -e "rmarkdown::render('shallot-vignette.Rmd')"
+

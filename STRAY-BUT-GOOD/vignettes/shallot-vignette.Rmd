@@ -1,0 +1,292 @@
+---
+title: "'shallot' Software Demonstration"
+author: "David B. Dahl"
+date: "03/31/2015"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Using the 'shallot' Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+out.format <- knitr::opts_knit$get("out.format")
+opts_chunk$set(out.width = '500px', fig.width = 6, fig.height = 6, dpi = 150)
+```
+
+# Introduction and Installation
+
+This vignette demonstrates the "shallot" package, an R implementation of the
+Ewens-Pitman attraction (EPA) distribution described in the paper *Random Partition Distribution Indexed by
+Pairwise Information* by Dahl, Day, and Tsai.  The package can also be used for estimation
+involving the Dirichlet process (ferg:1973) and the Pitman-Yor process
+(pitm:yor:1997).
+
+The package is not yet available on CRAN.  As such, you first need to install
+its dependency: "scala" which is available on CRAN.  The ".tar.gz" source file
+for the "shallot" package is available for download at
+<http://dahl.byu.edu/software/shallot>.  Since the "shallot" package does not
+need to compile code, you can install it on any platform using the
+type="source" option to the install.packages function.  In R, use the setwd to
+set the working directory to the directory containing the ".tar.gz" file that
+you downloaded and then execute:
+
+```{r eval=FALSE}
+install.packages("rscala")
+install.packages("shallot_0.2.3.tar.gz", type = "source")
+```
+
+Once installed, load the library in R with:
+
+```{r}
+library("shallot")
+```
+
+# Neal (2000) Model without Model Parameters
+
+Consider the example in Section 8 of Neal (2000) paper, "Markov chain sampling methods for Dirichlet process mixture models."
+The data is:
+
+```{r}
+data <- c(a = -1.48, b = -1.40, c = -1.16, d = -1.08, e = -1.02, f = 0.14, g = 0.51,
+          h = 0.53, i = 0.78)
+```
+
+The model, for $i=1,\ldots,n$, is:
+$$
+\begin{aligned}
+y_i \mid \mu_i &\sim \text{N}(\mu_i,\lambda) \\
+\mu_i \, \mid \, \text{G} &\sim \text{G} \\
+\text{G} &\sim \text{DP}(\alpha \text{G}_0)
+\end{aligned}
+$$
+
+where $\lambda$ is a precision parameter fixed at $0.1^{-2}$, $\alpha$ is the mass parameter fixed at $1$, and
+$\text{G}_0$ is the normal distribution with mean $\mu_0$ fixed at 0 and precision $\lambda_0$ fixed at $1$:
+```{r}
+lambda  <- 0.1^-2
+mu0     <- 0.0
+lambda0 <- 1.0^-2
+```
+Due to conjugacy, the model parameters can be marginalized out.
+Let $S$ be a subset of the integers $\{1,\ldots,n\}$ and $y_S = \{ y_i : i \in S \}$.
+The posterior predictive distribution of $y_i$ given $y_S$ is:
+$$
+\begin{aligned}
+y_i | y_S \sim \text{N}(m_*,\lambda p_*/(p_* + \lambda)),
+\end{aligned}
+$$
+where $m_* = (\lambda_0 \mu_0 + \lambda \sum_{i \in S} y_i)/p_*$ and $p_* = \lambda_0 + |S| \lambda$.
+A function to evaluate the log of the posterior predictive distribution of observation $i$ given a subset $S$ is:
+```{r}
+jainneal.log.predictive.density <- function(i, subset) {
+  precision <- lambda0 + length(subset) * lambda
+  mean <- (lambda0 * mu0 + lambda * sum(data[subset])) / precision
+  dnorm(data[i], mean = mean, sd = 1 / sqrt(lambda * precision / (precision + lambda)),
+        log = TRUE)
+}
+```
+This function must work for any subset of observation indices, including the empty subset.
+The name of this function is passed to the mcmc.parameters function:
+```{r}
+mcmc.params <- mcmc.parameters(log.density = jainneal.log.predictive.density)
+```
+Since the prior distribution on $\text{G}$ is the Dirichlet process with mass fixed at $1$, we use the Ewens partition distribution,
+as follows:
+```{r}
+NDRAWS <- 100
+dist <- ewens(mass(1.0, fixed = TRUE), length(data))
+```
+We sample from the posterior distribution using the collect function, as follows:
+```{r}
+mcmc <- collect(dist, n.draws = NDRAWS, mcmc.parameters = mcmc.params)
+```
+If we later decide we want to collect another 1,000 samples, simply pass the results of the first call (i.e., "mcmc") as the
+first argument to the "collect" function:
+```{r}
+mcmc <- collect(mcmc, n.draws = NDRAWS)
+```
+The "mcmc" object stores results in an internal format;
+to make the samples available in R, use the process function:
+```{r}
+output <- process(mcmc)
+```
+Convergence and posterior inference can then be made.  For example:
+```{r}
+# See what it contains
+output
+
+# Diagnosis convergence with a trace plot
+plot(output$entropy, ylab = "Entropy", type = "l")
+
+# Show first three partitions
+output$partitions[1:3, ]
+
+# Posterior distribution of the number of subsets
+table(output$n.subsets) / length(output$n.subsets)
+```
+
+# Neal (2000) Model with Model Parameters
+
+Suppose the model parameter cannot be marginalized out or, at least, we chose not to do so.
+A function to evaluate the log-likelihood contribution of observation $i$ given its parameter $\mu_i$ is:
+```{r}
+jainneal.log.likelihood <- function(i, parameter) {
+  dnorm(data[i], mean = parameter, sd = 1 / sqrt(lambda), log = TRUE)
+}
+```
+Let $S$ be a subset of the integers $\{1,\ldots,n\}$, $y_S = \{ y_i : i \in S \}$, and $\mu_S$ be the common
+value for $\mu_i$ for all $i \in S$.  The full conditional of $\mu_S$ is as follows:
+$$
+\begin{aligned}
+\mu_S \, | \, \cdot &\sim \text{N}(m_*,p_*),
+\end{aligned}
+$$
+where
+$m_* = (\lambda_0 \mu_0 + \lambda \sum_{i \in S} y_i)/p_*$, $p_* = \lambda_0 + |S| \lambda$.
+A function to sample a new parameter $\mu^*$ from $\text{G}_0$ or update a parameter $\mu^*$ given a subset of integers
+is as follows:
+```{r}
+jainneal.sample <- function(subset, parameter) {
+  if ( length(subset) == 0 ) {
+    rnorm(1, mean = mu0, sd = 1 / sqrt(lambda0))
+  } else {
+    precision <- lambda0 + length(subset) * lambda
+    mean <- (lambda0 * mu0 + lambda * sum(data[subset])) / precision
+    rnorm(1, mean = mean, sd = 1 / sqrt(precision))
+  }
+}
+```
+Note that this function updates $\mu^*$ from its full conditional distribution, but any valid MCMC update can be used.
+In that case, the current value of the parameter $\mu^*$ --- passed as the second argument to the function --- may be needed. 
+The names of these functions are passed to the mcmc.parameters function:
+```{r}
+mcmc.params <- mcmc.parameters(
+    log.density = jainneal.log.likelihood,
+    sample = jainneal.sample)
+```
+We sample from the posterior distribution using the collect function, as before:
+```{r}
+dist <- ewens(mass(1.0, fixed = TRUE), length(data), names = names(data))
+mcmc <- collect(dist, n.draws = NDRAWS, mcmc.parameters = mcmc.params)
+```
+Again, the "mcmc" object stores results in an internal format;
+to make the samples available in R, use the process function:
+```{r}
+output <- process(mcmc)
+```
+Convergence and posterior inference can then be made, as before.  Also, the "output" list now has
+a "parameters" elements.
+```{r}
+# See what it contains
+output
+
+# Show first three partitions
+output$partitions[1:3, ]
+
+# ... and the associated parameters
+output$parameters[1:3]
+
+# Posterior distribution of the number of subsets
+table(output$n.subsets) / length(output$n.subsets)
+
+# Posterior estimates under squared error loss
+params <- lapply(output$parameters, unlist)
+params <- do.call(rbind, lapply(1:nrow(output$partitions), function(i) {
+  params[[i]][output$partitions[i, ]]
+}))
+estimates <- apply(params, 2, mean)
+
+# Note shrinkage to cluster means
+plot(data, estimates - data)
+abline(h = 0)
+```
+
+# Neal (2000) Model with More Priors
+
+Consider priors for the parameters that were fixed in the previous section:
+$$
+\begin{aligned}
+\lambda &\sim \text{Gamma}(a, b)\\
+\alpha &\sim \text{Gamma}(c_0, d_0)\\
+\mu_0 &\sim \text{N}(m_0,p_0)\\
+\lambda_0 &\sim \text{Gamma}(a_0,b_0)
+\end{aligned}
+$$
+where $\text{Gamma}(x,y)$ is the gamma distribution with shape $x$, rate $y$, and expectation $x/y$.
+
+Update $\alpha$ using the Gibbs sampling method described by Escobar \& West (1995).
+Use Gibbs sampling for the other parameters, where the full conditional distributions are as follows:
+$$
+\begin{aligned}
+\lambda \mid \cdot &\sim \text{Gamma}(a + \frac{n}{2}, b + \frac{1}{2} \sum_{i=1}^n(y_i-\mu_i)^2) \\
+\mu_0 \mid \cdot &\sim \text{N}(m_q, p_q) \\
+\lambda_0 \mid \cdot &\sim \text{Gamma}(a_0 + \frac{q}{2}, b_0 + \frac{1}{2} \sum_{j=1}^q (\mu_j - m_0)^2),
+\end{aligned}
+$$
+where $m_q = (p_0 m_0 + \lambda_0 \sum_{j=1}^q \mu_{(j)})/p_q$, $p_q = p_0 + q \lambda_0$, and
+$\mu_{(1)},\ldots,\mu_{(q)}$ are the $q$ unique values among $\mu_1,\ldots,\mu_n$.
+
+This MCMC scheme is implemented in the following code:
+```{r}
+a  <- 2.5
+b  <- 0.02
+c0 <- 2
+d0 <- 2
+m0 <- 0
+p0 <- 0.5
+a0 <- 3
+b0 <- 3
+dist <- ewens(mass(c0, d0, fixed = FALSE), length(data), names = names(data))
+mcmc <- collect(dist, n.draws = 1, mcmc.parameters = mcmc.params)
+n.samples <- NDRAWS
+results <- matrix(NA, nrow = n.samples, ncol = 3)
+results[1, ] <- c(lambda, mu0, lambda0)
+for ( i in 2:n.samples ) {
+  mcmc <- collect(mcmc, n.draws = 1)
+  state <- current.state(mcmc)
+  parameters <- unlist(state$parameters)
+  lambda  <- rgamma(1, a + 0.5 * length(data), b + 0.5 * sum((data - 
+      parameters[state$partition])^2))
+  precision <- p0 + length(parameters) * lambda0
+  mean <- (p0 * m0 + lambda0 * sum(parameters)) / precision
+  mu0 <- rnorm(1, mean, 1 / sqrt(precision))
+  lambda0 <- rgamma(1, a0 + 0.5 * length(parameters), b0 + 0.5 * sum((parameters -
+      mu0)^2))
+  results[i, ] <- c(lambda, mu0, lambda0)
+}
+output <- process(mcmc)
+mcmc$proc.time
+```
+As before, MCMC output related to the partitioning are available by calling "process(mcmc)".  The values
+of $\lambda$, $\mu_0$, and $\lambda_0$ are available in the "results" matrix.  For example:
+```{r}
+lambda.density <- density(results[, 1])
+curve(dgamma(x, a, b), 0, 300, col = "red", ylim = c(0, max(lambda.density$y)),
+    main = expression(paste("Prior and Posterior on ", lambda)), ylab = "Density",
+    xlab = expression(lambda))
+lines(density(results[, 1]))
+```
+
+# Inference on the Partition
+
+A matrix containing pairwise probabilities that two items are together is obtained as follows:
+```{r}
+pp <- pairwise.probabilities(mcmc)
+as.matrix(pp)
+```
+The least-squares clustering of Dahl (2006) is found as follows:
+```{r}
+estimate <- estimate.partition(mcmc)
+estimate
+```
+Confidence information is found as follows:
+```{r}
+conf <- confidence(pp, estimate)
+conf
+```
+The corresponding confidence plot is obtained as follows:
+```{r}
+plot(conf)
+```

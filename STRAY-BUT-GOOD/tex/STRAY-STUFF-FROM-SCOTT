@@ -1,0 +1,70 @@
+Clustering
+The shallot program was built to compare alternate distributions of a given dataset from a clustering point-of-view: that is, a top-down approach.  This approach uses the Pitman-Yor process as indicated at the beginning of this paper.  For this, the mcmc.parameters function will not be used, and the mcmc.parameters argument in the collect function will remain null.  The package has available six different distribution methods to choose from: the Distance-Dependent Chinese Restaurant Process or DDCRP, Ewens, Ewens-Pitman, Ewens-Attraction, Ewens-Pitman-Attraction, and a new method called Ewens-Pitman-Attraction-Quantile.  For the purposes of this vignette, only DDCRP, Ewens-Pitman-Attraction, and Ewens-Pitman-Attraction-Quantile will be discussed.
+
+First, the shallot program incorporates several variables that each have either the Gamma or the Beta distribution.  These variables help adjust how well the shallot program works in improving the distribution of the dataset elements to be more similar to the distribution indicated by the truth column.  One variable is the number of samples, which indicates the number of partitions, a partition being a division of the dataset elements into one or more subsets.  Each partition has a different number of subsets and/or a different allocation of the dataset elements into each subset.  For example, suppose the dataset consisted of elements {1,2,3}.  The possible partitions would be as follows:
+
+\{\{1\},\{2\},\{3\}\}     \{\{1,2\},\{3\}\}     \{\{1,3\},\{2\}\}     \{\{1\},\{2,3\}\}     \{\{1,2,3\}\}
+
+However, the datasets that this program is intended to work with are large enough that there would be far more partitions than five.  The number of partitions can theoretically go infinitely high, but 500 is the most recommended number to work with.
+
+The shallot program, when fully executed, creates a Normal distribution of the number of subsets against the proportion of partitions that each have that number of subsets.  The chart below shows an example of how this works:
+
+\includegraphics[scale=0.6]{Rplot}\newline
+
+The x-axis indicates the number of subsets, and the y-axis indicates the proportion of partitions.  Different partitions can have different numbers of subsets, and the bigger some of the variables are, the more subsets all of the partitions would have.  For example, in the above chart, approximately 31 percent, represented by the y-axis value of 0.309, of the partitions each have approximately 3 subsets.  The distribution itself forms a Normal distribution and uses the variables as its parameters.
+
+Having thus established that the comparison of the number of subsets to the proportion of partitions results in a Normal distribution, the next step is to see how the variables affect this distribution.  The first variable to consider is the temperature, which controls how wide or tight the distribution described above is.  When the ddcrp method is being used, the temperature also controls the number of subsets.  The chart below illustrates the temperature's influence on the distribution in ddcrp:
+
+\includegraphics[scale=0.6]{Rplot01}\newline
+
+As the temperature increases, the distribution initially becomes shorter and wider, indicating that there are fewer partitions with the same number of subsets.  Then, after the temperature becomes bigger than 3, the distribution becomes taller and narrower again, indicating that more partitions are in agreement on the number of subsets.  In short, the change in temperature describes a parabolic curve.
+
+To set the temperature value, the user must call the \texttt{decay} function, which internally calls the \texttt{temperature} function that stores the temperature and optionally fixes the temperature at the given value.  The \texttt{decay} function also fixes the decay method with the \texttt{decay.generic} function.  The distribution tails can decay by one of three methods: exponential, reciprocal, and subtraction, although frankly there is very little difference between the results of these three methods.  Thus, all examples discussed here use the exponential method.
+
+The temperature itself has the Gamma distribution with shape = 2 and rate = 0.5, and the decay function will sample the temperature from this distribution if the temperature is not fixed.  Alternatively, the user may specify the shape and rate parameters to determine which Gamma distribution to sample from.  (Incidentally, the default temperature is 3, and the decay function will use 3 if no temperature is specified and the temperature remains fixed.)
+
+The \texttt{discount} and \texttt{permutation} functions simply process the given dataset for use in the \texttt{attraction} method, which in turn takes the results of the \texttt{decay}, \texttt{distance}, and \texttt{permutation} functions and stores them for future use.
+
+Next up is the \texttt{mass} function, which establishes and fixes the value for the massValue variable.  The mass is a location parameter for the Normal distribution of the subsets against the partitions and itself has the Gamma distribution of shape = 2.5 and rate = 2.  The mass function will sample from this distribution if the given value is not fixed.  If no value is provided but fixed is TRUE, then the default mass is 1.2.  The mass can never be less than or equal to 0, or an error message will appear.  The chart below shows the massValue variable's influence on the distribution in ddcrp:
+
+\includegraphics[scale=0.6]{Rplot02}\newline
+
+Each color represents a different value for the mass.  Red means mass = 1, blue means 5, and green means 10.  Here, temperature is in control of the number of subsets and therefore controls the parabolic curve, while the mass can only shift the set of distributions further to the right, concentrating them closer to a central number of subsets.  However, when switching to the Ewens-Pitman-Attraction method:
+
+\includegraphics[scale=0.6]{Rplot03}\newline
+
+In this example, the discount remains constant at 0 and therefore will not be discussed at this time.  Here, the temperature has very little effect on the distribution beyond minor fluctuations in the height and width of the distribution.  Even here, though, the value for the temperature does greatly affect the adjusted Rand index, so the temperature must still be taken into account.  However, this time it is the mass variable that dictates the number of subsets and therefore controls the parabolic curve.  Furthermore, the bigger the mass, the more concentrated the different partitions are at the same relative number of subsets.
+
+The next variable to consider is the discount, which, unlike temperature and mass, has the Beta distribution of shape1 = shape2 = 1, and the default discount value is 0.05.  The \texttt{discount} function will sample the discount from this distribution at random if no value is fixed and will use 0.05 if the value is fixed but not provided.  Again, the other parameters can be specified if no discount value is provided, but fixed must equal FALSE to allow this.  The discount can never be less than 0 or greater than or equal to 1.  The chart below shows the discount's influence on the distribution in the Ewens-Pitman-Attraction method:
+
+\includegraphics[scale=0.6]{Rplot04}\newline
+
+In this example, red means discount = 0, blue means discount = 0.5, and green means discount = 0.9.  Within each color-coded discount group are three groups of distributions.  Each group represents a different mass value.  The mass values are 1, 30, and 3000 respectively.  Here, temperature still only slightly controls the width and height of each individual distribution, whereas mass controls the parabolic curve of the number of subsets.  The discount does what the mass did on ddcrp: that is, shift the distributions more to the right.  Meanwhile, on the Ewens-Pitman-Attraction-Quantile method:
+
+\includegraphics[scale=0.6]{Rplot05}\newline
+
+In this example, p remains constant at its median value of 0.5.  Here, the temperature behaves the same as in the Ewens-Pitman-Attraction method, as do the mass and the discount.  The mass still controls the parabolic curve while the discount can only push the distributions further to the right on the parabola.
+
+Another variable to consider is p, which is a new variable exclusive to the Ewens-Pitman-Attraction-Quantile method.  P can never be less than 0 or greater than 1.  This variable is not controlled by any known distribution.  The chart below shows p's effect on the distributions:
+
+\includegraphics[scale=0.6]{Rplot06}\newline
+
+In this example, red means p = 0, blue means p = 0.5, and green means p = 1.  Here, temperature, mass, and discount behave much as they did in the Ewens-Pitman-Attraction method, and p has very little effect, if any, on the distributions.  P does seem to have some effect on the adjusted Rand index on several datasets and is therefore still worthy of discussion, but graphically, the effect is barely noticeable.
+
+Once these variables have been established, all are passed to one of the six distribution functions, each one establishing which distribution method is to be used.  The three that are used the most often are the \texttt{ddcrp}, \texttt{ewens.pitman.attraction}, and \texttt{ewens.pitman.attraction.quantile} functions, as they generally produce the highest adjusted Rand indices.  The function simply compiles all values that had previously been specified and stores them in preparation for the \texttt{collect} function, which is defined earlier in this paper.  The difference here, though, is that the mcmc.parameters argument remains NULL, thus allowing a pure examination of the clusters.
+
+This paper has been using standard 2-dimensional charts to show the Normal distribution of the subsets against the partitions and how the different values for the variables affect the distribution's behavior, but there are two other ways to visually examine the partitions.  For these, the user must prepare the pairwise probabilities (that is, it must calculate the probability that each element is associated with each of the other elements in the dataset).  This is done with the \texttt{pairwise.probabilities} function.  Next, the \texttt{confidence} function is called, which takes as its input the results of the \texttt{pairwise.probabilities} and \texttt{estimate.partition} functions and calculates the confidence amounts.  Finally, when the results of the texttt{confidence} function are plotted, they take the form of a heatmap, which displays how strongly each element of the dataset is associated with other elements as grouped by subsets:
+
+\includegraphics[scale=0.6]{Rplot07}\newline
+
+When the original dataset is included as a parameter, the resulting plot shows how closely the dataset elements are associated to each other based solely on each individual attribute:
+
+\includegraphics[scale=0.6]{Rplot08}\newline
+
+A few final notes: the change in the temperature directly affects the number of subsets on the DDCRP method in that the curve formed by the change in the number of subsets is comparable to the curve formed by the cumulative probability function of the Gamma distribution of the temperature values with shape = 2 and rate = 0.5.  Consequently, the exact number of subsets becomes meaningless as the cumulative probabilities can be used to directly calculate the proportion of partitions.  However, I have not been able to figure out the exact arithmetical formulae to do so, although the rate parameter in the overall Normal distribution is clearly a function of the temperature, whereas I surmise that the location parameter is a function of the mass.  The other distribution methods have a similar setup, but with the mass controlling the rate parameter and the discount controlling the location parameter, while the temperature simply controls minor differences in how tightly the distribution is arranged.  By using the cumulative probability function for each variable, the user may establish a control set of values against which one may compare the actual values generated by the dataset in question.
+
+\bibliography{refs}
+\bibliographystyle{asa}
+
+\end{document}
+

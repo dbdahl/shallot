@@ -1,0 +1,4 @@
+#!/bin/bash
+
+time java -cp '../distlib/*' org.ddahl.shallot.example.Neal2000 "$@"
+

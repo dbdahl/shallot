@@ -1,3 +1,9 @@
+/deliveries
+/R/shallot/inst/java
+/R/shallot/java/
+/R/shallot_*.tar.gz
+/R/shallot.Rcheck
+
 # History files
 .Rhistory
 .Rapp.history
@@ -32,3 +38,10 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 .Rproj.user
+target
+/lib/rscala_*.jar
+/lib_managed
+*.Rcheck
+/.cache-main
+/.cache-tests
+/.idea

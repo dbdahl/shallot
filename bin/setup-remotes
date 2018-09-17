@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# This script sets up pushing to both the official, internal repository and the public github
+# mirror.  Presummably the repository has already been check out using:
+#
+#   git clone git@github.com:dbdahl/shallot.git
+#   cd shallot
+
+#cd $(dirname $(readlink -f "$0"))/..
+
+if [[ ! -e R/shallot/DESCRIPTION ]]
+then
+  2>&1 echo "Error: it looks like you need to checkout the Github repository:"
+  2>&1 echo "   cd ${PWD}/R; git clone git@github.com:dbdahl/shallot.git"
+  exit 1
+fi
+
+cd R/shallot
+
+if [[ $(git remote -v | wc -l) -gt 2 ]]
+then
+  2>&1 echo "Note: it seems that the remotes are already set up."
+  exit 0
+fi
+
+git remote -v | grep -q github.com
+if [[ $? -ne 0 ]]
+then
+  2>&1 echo "Error: remote not found git@github.com:dbdahl/shallot.git."
+  exit 1
+fi
+
+git remote set-url --add --push origin git@github.com:dbdahl/shallot.git
+git remote set-url --add --push origin git@dahl-git.byu.edu:dahl/shallot.git
+
+git remote -v
+

@@ -1,0 +1,30 @@
+0.4.4 (2018-06-29)
+  * Updated to rscala 3.0.2.
+
+0.4.3 (2017-10-02)
+  * Circumvent a problem with 'R CMD check' not finishing on Windows.
+
+0.4.2 (2017-09-27)
+  * Updated to latest rscala.
+
+0.4.1 (2017-08-24)
+  * Minor update to correctly describe the package functionality.
+
+0.4.0 (2017-08-22)
+  * Added function sample.partitions.posterior to do posterior sampling.
+  * Added partition.pmf function that returns the probability mass function.
+  * Added enumerate.partitions function.
+  * Renamed functions sample.partition & process.partitions to
+    sample.partitions & process.partitions.
+  * Updated to the lastest version of rscala.
+
+0.3.2 (2017-05-24)
+  * Spin down the Scala interpreter/compiler when the package is unloaded using
+    the .rscalaPackageUnload function.
+  * Removed Apache Commons Math JAR file and now get it from the
+    commonsMath package.
+  * Circumvent a weird bug in the class loader of Scala 2.11.x.
+
+0.3.1 (2017-05-11)
+  * Initial release to CRAN.
+

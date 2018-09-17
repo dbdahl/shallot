@@ -1,0 +1,336 @@
+
+R Under development (unstable) (2015-03-19 r68032) -- "Unsuffered Consequences"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-unknown-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library("shallot")
+> 
+> shallot.load(java.heap.maximum="2G")
+> 
+> mass(3.2)
+mass fixed at 3.2
+> mass(3.2,fixed=FALSE)
+mass sampled from Gamma(shape=2.5,rate=2)
+> mass(2.9,0.3,fixed=FALSE)
+mass sampled from Gamma(shape=2.9,rate=0.3)
+> 
+> discount(0.2)
+discount fixed at 0.2
+> discount(2.9,0.3,fixed=FALSE)
+discount sampled from Beta(shape1=2.9,shape2=0.3)
+> 
+> d <- distance(as.matrix(dist(iris[,-5])))
+> 
+> permutation(4,3,2,1)
+permutation of 4 items fixed at (3,2,1,0)
+> permutation(sample(150))
+permutation of 150 items fixed at (99,147,68,132,20,18,17,108,13,57,101,3,116,104...
+> permutation(n.items=10,fixed=FALSE)
+permutation of 10 items sampled uniformly
+> permutation(1,2,3,fixed=FALSE)
+permutation of 3 items sampled uniformly
+> permutation(1,2,3,fixed=TRUE)
+permutation of 3 items fixed at (0,1,2)
+> 
+> decay.exponential(3.2)
+exponential decay function with temperature fixed at 3.2
+> decay.reciprocal(1,4,fixed=FALSE)
+reciprocal decay function with temperature sampled from Gamma(shape=1,rate=4)
+> decay.subtraction(fixed=FALSE)
+subtraction decay function with temperature sampled from Gamma(shape=2,rate=0.5)
+> decay <- decay.exponential(fixed=TRUE)
+> 
+> attraction(d,permutation(n.items=d$n.items,fixed=FALSE),decay)
+attraction for 150 items:
+  distance for 150 items
+  permutation of 150 items sampled uniformly
+  exponential decay function with temperature fixed at 3
+> attraction(d,permutation(1:d$n.items,fixed=TRUE),decay)
+attraction for 150 items:
+  distance for 150 items
+  permutation of 150 items fixed at (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18...
+  exponential decay function with temperature fixed at 3
+> attraction(d,permutation(n.items=d$n.items,fixed=FALSE),decay)
+attraction for 150 items:
+  distance for 150 items
+  permutation of 150 items sampled uniformly
+  exponential decay function with temperature fixed at 3
+> a <- attraction(d,permutation(sample(d$n.items)),decay)
+> a
+attraction for 150 items:
+  distance for 150 items
+  permutation of 150 items fixed at (29,33,95,22,146,139,92,7,100,13,34,5,98,87,31,...
+  exponential decay function with temperature fixed at 3
+> apply(as.matrix(a),1,sum)
+  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
+ 34 136  82 141  77  11 144   7  95  73  44  76  32   9 143 107 117  35  66  45 
+ 21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40 
+128  54   3 113  92  74  17 132  61   0  80  14  41   1  10  33 149  62  23  81 
+ 41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60 
+ 79 115  96  85  59 122  90  75  43 137  39  94  70  98  22  20  19 104  31  56 
+ 61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80 
+ 18  24 140  47 100  60  57 120  27 110 119  46 131  78 111  97  53 102 135  72 
+ 81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100 
+ 28 121  58 138  15  48 124  13 103  89  63  25   6 142  55   2  30 147  12  36 
+101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 
+  8  68 139 125  40  49 105  86  91  52 123  21  93 112 129  42  29  16  26 146 
+121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 
+148  51  99  69  87  88 127  71 126 134  84  64  83  50 114 145 106  38 101   5 
+141 142 143 144 145 146 147 148 149 150 
+ 65  37 118 133 116 108   4 130 109  67 
+> 
+> ewens(mass(),30)
+$mass
+mass fixed at 1.2
+
+$n.items
+[1] 30
+
+$names
+ [1] "c1"  "c2"  "c3"  "c4"  "c5"  "c6"  "c7"  "c8"  "c9"  "c10" "c11" "c12"
+[13] "c13" "c14" "c15" "c16" "c17" "c18" "c19" "c20" "c21" "c22" "c23" "c24"
+[25] "c25" "c26" "c27" "c28" "c29" "c30"
+
+attr(,"class")
+[1] "shallot.distribution" "ewens"               
+> 
+> ewens.pitman(mass(),discount(),30)
+$mass
+mass fixed at 1.2
+
+$discount
+discount fixed at 0.05
+
+$n.items
+[1] 30
+
+$names
+ [1] "c1"  "c2"  "c3"  "c4"  "c5"  "c6"  "c7"  "c8"  "c9"  "c10" "c11" "c12"
+[13] "c13" "c14" "c15" "c16" "c17" "c18" "c19" "c20" "c21" "c22" "c23" "c24"
+[25] "c25" "c26" "c27" "c28" "c29" "c30"
+
+attr(,"class")
+[1] "shallot.distribution" "ewensPitman"         
+> 
+> ea <- ewens.attraction(mass(),a)
+> ea
+$mass
+mass fixed at 1.2
+
+$attraction
+attraction for 150 items:
+  distance for 150 items
+  permutation of 150 items fixed at (29,33,95,22,146,139,92,7,100,13,34,5,98,87,31,...
+  exponential decay function with temperature fixed at 3
+
+$n.items
+[1] 150
+
+$names
+  [1] "1"   "2"   "3"   "4"   "5"   "6"   "7"   "8"   "9"   "10"  "11"  "12" 
+ [13] "13"  "14"  "15"  "16"  "17"  "18"  "19"  "20"  "21"  "22"  "23"  "24" 
+ [25] "25"  "26"  "27"  "28"  "29"  "30"  "31"  "32"  "33"  "34"  "35"  "36" 
+ [37] "37"  "38"  "39"  "40"  "41"  "42"  "43"  "44"  "45"  "46"  "47"  "48" 
+ [49] "49"  "50"  "51"  "52"  "53"  "54"  "55"  "56"  "57"  "58"  "59"  "60" 
+ [61] "61"  "62"  "63"  "64"  "65"  "66"  "67"  "68"  "69"  "70"  "71"  "72" 
+ [73] "73"  "74"  "75"  "76"  "77"  "78"  "79"  "80"  "81"  "82"  "83"  "84" 
+ [85] "85"  "86"  "87"  "88"  "89"  "90"  "91"  "92"  "93"  "94"  "95"  "96" 
+ [97] "97"  "98"  "99"  "100" "101" "102" "103" "104" "105" "106" "107" "108"
+[109] "109" "110" "111" "112" "113" "114" "115" "116" "117" "118" "119" "120"
+[121] "121" "122" "123" "124" "125" "126" "127" "128" "129" "130" "131" "132"
+[133] "133" "134" "135" "136" "137" "138" "139" "140" "141" "142" "143" "144"
+[145] "145" "146" "147" "148" "149" "150"
+
+attr(,"class")
+[1] "shallot.distribution" "ewensAttraction"     
+> 
+> mcmc.parameters()
+$mass.rw.sd
+[1] 0.5
+
+$discount.rw.sd
+[1] 0.1
+
+$permutation.grab.size
+[1] 10
+
+$temperature.rw.sd
+[1] 0.5
+
+$n.iterations.per.sample
+[1] 1
+
+$uses.predictive.density
+[1] FALSE
+
+$sampling.model
+NULL
+
+attr(,"class")
+[1] "shallot.mcmc.parameters"
+> 
+> samples <- collect(ea,n.draws=100)
+> samples <- collect(samples,n.draws=100)
+> y <- process(samples)
+> str(y)
+List of 4
+ $ partitions: int [1:208, 1:150] 1 1 1 1 1 1 1 1 1 1 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : NULL
+  .. ..$ : chr [1:150] "1" "2" "3" "4" ...
+ $ n.subsets : int [1:208] 5 8 7 3 7 7 5 8 10 5 ...
+ $ entropy   : num [1:208] 1.176 1.431 1.018 0.659 0.775 ...
+ $ proc.time :Class 'proc_time'  Named num [1:5] 0.038 0.005 4.063 0 0
+  .. ..- attr(*, "names")= chr [1:5] "user.self" "sys.self" "elapsed" "user.child" ...
+ - attr(*, "class")= chr "shallot.samples"
+> plot(y$entropy,type="l")
+> 
+> collect(ewens.pitman(mass(1.0),discount(0.05),10),n.draws=100)
+raw samples --- use the 'process' function to extract information
+> collect(ewens(mass(1.0),10),n.draws=100)
+raw samples --- use the 'process' function to extract information
+> 
+> dist <- ewens(mass(1.5,fixed=FALSE),10)
+> asdf.mcmc <-    collect(dist,n.draws=100,mcmc.parameters=mcmc.parameters())
+> asdf.forward <- collect(dist,n.draws=100)
+> 
+> y1 <- process(asdf.mcmc)
+> y2 <- process(asdf.forward)
+> mean(apply(y1$partitions,1,max))
+[1] 3.47
+> mean(apply(y2$partitions,1,max))
+[1] 3.144231
+> 
+> dist <- ewens.pitman(mass(1.5,fixed=FALSE),discount(0.05,fixed=FALSE),10)
+> asdf.mcmc <-    collect(dist,n.draws=1000,mcmc.parameters=mcmc.parameters())
+> asdf.forward <- collect(dist,n.draws=1000)
+> y1 <- process(asdf.mcmc)
+> y2 <- process(asdf.forward)
+> mean(apply(y1$partitions,1,max))
+[1] 5.688
+> mean(apply(y2$partitions,1,max))
+[1] 5.855159
+> 
+> e2 <- ewens(mass(fixed=FALSE),150)
+> asdf2.mcmc <-    collect(e2,n.draws=300,mcmc.parameters=mcmc.parameters())
+> asdf2.mcmc <-    collect(asdf2.mcmc,n.draws=300)
+> asdf2.mcmc <-    collect(asdf2.mcmc,n.draws=300)
+> 
+> ea2 <- ewens.attraction(mass(fixed=TRUE),attraction(d,permutation(1:150,fixed=TRUE),decay))
+> asdf.mcmc <-    collect(ea2,n.draws=300,mcmc.parameters=mcmc.parameters())
+> asdf.mcmc <-    collect(asdf.mcmc,n.draws=300)
+> asdf.mcmc$proc.time
+   user  system elapsed 
+  0.036   0.008  31.262 
+> plot(process(asdf.mcmc)$entropy,type="l")
+> acf(process(asdf.mcmc)$entropy)
+> 
+> ea2 <- ewens.attraction(mass(fixed=FALSE),attraction(d,permutation(1:150,fixed=FALSE),decay))
+> asdf.mcmc <-    collect(ea2,n.draws=300,mcmc.parameters=mcmc.parameters())
+> process(asdf.mcmc)$rates
+       mass permutation temperature 
+       1.00        0.78         NaN 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> data <- c(-1.48, -1.40, -1.16, -1.08, -1.02, 0.14, 0.51, 0.53, 0.78)
+> sigma <- 0.1
+> mu0 <- 0.0 
+> sigma0 <- 1.0
+> 
+> s2 <- sigma*sigma
+> s02 <- sigma0*sigma0
+> s02Inv <- 1/s02
+> 
+> shallot.sample <- function(subset,parameter) {
++   if ( length(subset) ) rnorm(1,mean=mu0,sd=sigma0)
++   else {
++     s <- sum(data[subset])
++     variance <- 1 / (s02Inv + length(subset) / s2) 
++     mean <- variance * (mu0 / s02 + s / s2) 
++     rnorm(1,mean=mean,sd=sqrt(variance))
++   }
++ }
+> 
+> shallot.log.density <- function(i,parameter) {
++   dnorm(data[i],mean=parameter,sd=sigma,log=TRUE)
++ }
+> 
+> mcmc.p <- mcmc.parameters(log.density=shallot.log.density,sample=shallot.sample)
+> 
+> e2 <- ewens(mass(fixed=FALSE),length(data))
+> asdf1.mcmc <- collect(e2,n.draws=300)
+> 
+> asdf2.mcmc <- collect(e2,n.draws=30,mcmc.parameters=mcmc.p)
+> for ( i in 1:100 ) {
++   mu0 <- rnorm(1,mean=0,sd=0.1)
++   asdf2.mcmc <- collect(asdf2.mcmc,n.draws=1)
++ }
+> asdf2.mcmc$proc.time
+   user  system elapsed 
+  4.462   0.578   5.426 
+> 
+> asdf2.p <- process(asdf2.mcmc)
+> 
+> table(asdf2.p$n.subsets)/length(asdf2.p$n.subsets)
+
+         2          3          4          5          6 
+0.17692308 0.44615385 0.27692308 0.07692308 0.02307692 
+> 
+> pp <- pairwise.probabilities(samples)
+> pp
+pairwise probabilities for 150 items --- use as.matrix function to obtain matrix
+> as.matrix(pp)[1:5,1:5]
+          1         2         3         4         5
+1 1.0000000 0.7259615 0.6730769 0.6971154 0.7019231
+2 0.7259615 1.0000000 0.7355769 0.7163462 0.6730769
+3 0.6730769 0.7355769 1.0000000 0.7115385 0.6586538
+4 0.6971154 0.7163462 0.7115385 1.0000000 0.6826923
+5 0.7019231 0.6730769 0.6586538 0.6826923 1.0000000
+> 
+> e <- estimate.partition(samples,pp,max.subsets=3)
+> e
+  1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 
+  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   2   1   1   1   1 
+ 21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40 
+  1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1 
+ 41  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60 
+  1   1   1   1   1   1   1   1   1   1   3   3   3   3   3   3   3   3   3   3 
+ 61  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80 
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+ 81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100 
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 
+  3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 
+141 142 143 144 145 146 147 148 149 150 
+  3   3   3   3   3   3   3   3   3   3 
+attr(,"proc.time")
+   user  system elapsed 
+  0.015   0.004   0.496 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+ 25.903   5.774 112.796 

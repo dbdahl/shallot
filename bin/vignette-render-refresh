@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cd $(dirname "$(readlink -f \"$0\")")
+./vignette-render
+NAME="^The rscala Vignette - .*$"
+CHROME_WINDOW_ID=$(xdotool search --name "$NAME" | head -1)
+if [[ -z "$CHROME_WINDOW_ID" ]]
+then
+  echo "Cannot find window: $NAME"
+else
+  echo "Refreshing window"
+  xdotool key --window $CHROME_WINDOW_ID 'CTRL+r'
+fi
+
