@@ -795,7 +795,7 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
   p <- .labels2partition(partition, sm)
   rdg <- s$rdg()
   pb <- if ( progress.bar ) txtProgressBar(min=0, max=100, style=3) else NULL
-  full <- sampler(p,sm,pm,scalaType(pm),rdg,scalaSerialize(pb,s),progress.bar)
+  full <- sampler(p,sm,pm,scalaType(pm),rdg,scalaPush(pb,s),progress.bar)
   if ( progress.bar ) close(pb)
   raw <- structure(list(ref=full$"_1"(), names=partition.model$names), class="shallot.samples.raw")
   hyperparameters <- full$"_2"()
@@ -886,10 +886,10 @@ sampling.model <- function(sample.parameter, log.density) {
 process.samples <- function(x) {
   if ( ( ! inherits(x,"shallot.samples.raw") ) && ( ! inherits(x,"shallot.samples.full") ) ) stop("'x' should be a result from the functions 'sample.partitions' or 'sample.partitions.posterior'.")
   if ( inherits(x,"shallot.samples.full") ) {
-    result <- sdols:::scalaUnserialize.clustering(x$raw$ref, bridge=s, names=x$raw$names, withParameters=TRUE)
+    result <- scalaPull(x$raw$ref, "clustering", names=x$raw$names, withParameters=TRUE)
     result[['hyperparameters']] <- x$hyperparameters
   } else {
-    result <- sdols:::scalaUnserialize.clustering(x$ref, bridge=s, names=x$names, withParameters=TRUE)
+    result <- scalaPull(x$ref, "clustering", names=x$names, withParameters=TRUE)
   }
   result
 }
