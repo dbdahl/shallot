@@ -141,46 +141,7 @@ setversion $MAJOR $(date +'%Y-%m-%d')
 # Scala stuff
 if [[ -n "$TASK_SCALA" ]]
 then
-  $SBT clean
-  # Package jar files
-  function package {
-    output=$($SBT $1 | tee /dev/tty)
-    echo "$output" | grep 'info.*Packaging .*\.jar ...' | awk '{print $3}'
-  }
-  JARBIN=$(package +package)
-  JARSRC=$(package +packageSrc)
-
-  # Copy jar file to R package
-  function copy {
-    dir="${@: -2:1}"
-    suffix="${@: -1}"
-    length=$(($#-2))
-    others="${@:1:$length}"
-    rm -rf "$dir"
-    mkdir -p "$dir"
-    cp $others "$dir"
-  }
-  #copy $JARBIN "$PKG_HOME"/R/$PKG_NAME/inst/java ""
-  JARDIR="$PKG_HOME"/R/${PKG_NAME}/inst/java
-  rm -rf "$JARDIR"
-  mkdir -p "$JARDIR"/scala-2.12
-  mkdir -p "$JARDIR"/scala-2.11
-  cp $(find target -regex '.*/shallot_2.12-.*\.jar' | grep -v -- -sources) "$JARDIR"/scala-2.12/${PKG_NAME}.jar
-  cp $(find target -regex '.*/shallot_2.11-.*\.jar' | grep -v -- -sources) "$JARDIR"/scala-2.11/${PKG_NAME}.jar
-  #copy $JARSRC "$PKG_HOME"/R/$PKG_NAME/java -sources
-  SRCDIR="$PKG_HOME"/R/${PKG_NAME}/java
-  rm -rf "$SRCDIR"/*.jar
-  mkdir -p "$SRCDIR"
-  cp "$PKG_HOME"/target/scala-2.12/${PKG_NAME}_2.12-*-sources.jar "$SRCDIR"/${PKG_NAME}-sources.jar
-
-  # cp "$PKG_HOME"/lib_managed/jars/org.apache.commons/commons-math3/commons-math3-*.jar "$PKG_HOME"/R/$PKG_NAME/inst/java
-  # cp "$PKG_HOME"/lib_managed/srcs/org.apache.commons/commons-math3/commons-math3-*.jar "$PKG_HOME"/R/$PKG_NAME/java
-
-  if [[ -n "TASK_PUBLISH" ]]
-  then
-    $SBT +publishLocal
-  fi
-
+  R --slave -e "rscala::scalaSBT()"
 fi
 
 # Build R package

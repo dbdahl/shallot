@@ -1,6 +1,6 @@
 /deliveries
-/R/shallot/inst/java
-/R/shallot/java/
+/R/shallot/inst/java/scala-*/*.jar
+/R/shallot/java/*.jar
 /R/shallot_*.tar.gz
 /R/shallot.Rcheck
 

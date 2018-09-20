@@ -14,7 +14,7 @@ scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature" )
 libraryDependencies ++= Seq(
   "org.ddahl" %% "sdols" % "1.6-SNAPSHOT",
   "org.apache.commons" % "commons-math3" % "3.6.1" withSources(),
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
 
 retrieveManaged := true
