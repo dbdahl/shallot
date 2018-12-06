@@ -1,3 +1,4 @@
+#' @import rscala
 .onLoad <- function(libname, pkgname) {
   s <- sdols:::s
   scalaJARs(pkgname,s)
