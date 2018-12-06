@@ -1,4 +1,13 @@
-# compute variance ratio
+# Association Matrix from cluster labels
+assoc.matrix <- function(cl){
+  n <- length(cl)
+  cl1 <- rep(cl,n)
+  cl2 <- rep(cl,each=n)
+  matrix(cl1==cl2, ncol=n)*1
+}
+
+# Variance Ratio
+# compute variance ratio for sdols confidence object
 var.ratio <- function(conf) {
   cl.am <- assoc.matrix(conf$clustering)
   epam <- conf$expectedPairwiseAllocationMatrix
@@ -16,6 +25,8 @@ var.ratio <- function(conf) {
   cl.var/tot.var
 }
 
+# Parition Confidence
+# compute parition confidence for sdols confidence object
 part.conf <- function(conf){
   if (length(unique(conf$clustering)) == length(conf$clustering)) return(0)
   cl.am <- assoc.matrix(conf$clustering)

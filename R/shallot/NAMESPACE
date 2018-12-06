@@ -33,6 +33,8 @@ export(process.samples)
 export(enumerate.partitions)
 export(partition.pmf)
 export(sampling.model)
+export(default.mass)
+export(mass.algorithm)
 
 S3method("print", "shallot.mass")
 S3method("print", "shallot.discount")
