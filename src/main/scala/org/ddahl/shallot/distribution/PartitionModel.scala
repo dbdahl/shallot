@@ -62,7 +62,7 @@ trait PartitionModel[A] {
     iteratorForForwardSampling(nItems).foldLeft(Partition.empty[A]())((partition, i) => probabilitySequential(i, partition).sample(rdg))
   }
 
-  final def forwardSampler(nItems: Int, rdg: org.apache.commons.math3.random.RandomDataGenerator) = () => forwardSample(nItems, rdg)
+  final def forwardSampler(nItems: Int, rdg: RDG) = () => forwardSample(nItems, rdg)
 
   final def tabulate(nItems: Int) = {
     Distribution(Partition.enumerate(() => samplingModel.sample(), nItems).map(partition => (partition, logProbability(partition))), true, !partitionProbabilitiesSumToOne)

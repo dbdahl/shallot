@@ -601,6 +601,7 @@ as.matrix.shallot.attraction <- function(x, ...) {
 ewens <- function(mass, n.items, names=paste0("c",1:n.items)) {
   n.items <- as.integer(n.items[1])
   if ( n.items < 0 ) stop("'n.items' must be nonnegative.")
+  if ( ! inherits(mass,"shallot.mass") ) stop("'mass' must be a result from the 'mass' function.")
   result <- list(mass=mass,n.items=n.items,names=names)
   class(result) <- "shallot.distribution.ewens"
   result
@@ -624,6 +625,7 @@ print.shallot.distribution.ewens <- function(x, ...) {
 ewens.pitman <- function(mass, discount, n.items, names=paste0("c",1:n.items)) {
   n.items <- as.integer(n.items[1])
   if ( n.items < 0 ) stop("'n.items' must be nonnegative.")
+  if ( ! inherits(mass,"shallot.mass") ) stop("'mass' must be a result from the 'mass' function.")
   result <- list(mass=mass,discount=discount,n.items=n.items,names=names)
   class(result) <- "shallot.distribution.ewensPitman"
   result
@@ -647,6 +649,7 @@ print.shallot.distribution.ewensPitman <- function(x, ...) {
 #' @rdname ewens
 #' @export
 ewens.attraction <- function(mass, attraction) {
+  if ( ! inherits(mass,"shallot.mass") ) stop("'mass' must be a result from the 'mass' function.")
   result <- list(mass=mass,attraction=attraction,n.items=attraction$n.items,names=attraction$names)
   class(result) <- "shallot.distribution.ewensAttraction"
   result
@@ -669,6 +672,7 @@ print.shallot.distribution.ewensAttraction <- function(x, ...) {
 #' @rdname ewens
 #' @export
 ewens.pitman.attraction <- function(mass, discount, attraction) {
+  if ( ! inherits(mass,"shallot.mass") ) stop("'mass' must be a result from the 'mass' function.")
   result <- list(mass=mass,discount=discount,attraction=attraction,n.items=attraction$n.items,names=attraction$names)
   class(result) <- "shallot.distribution.ewensPitmanAttraction"
   result
@@ -693,6 +697,7 @@ print.shallot.distribution.ewensPitmanAttraction <- function(x, ...) {
 #' @rdname ewens
 #' @export
 ddcrp <- function(mass, attraction) {
+  if ( ! inherits(mass,"shallot.mass") ) stop("'mass' must be a result from the 'mass' function.")
   result <- list(mass=mass,attraction=attraction,n.items=attraction$n.items,names=attraction$names)
   class(result) <- "shallot.distribution.ddcrp"
   result
