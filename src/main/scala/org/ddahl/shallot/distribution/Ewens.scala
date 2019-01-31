@@ -14,8 +14,8 @@ class Ewens[A] private (val samplingModel: SamplingModel[A], val mass: Mass) ext
 
   def replaceMass(newMass: Mass) = new Ewens(samplingModel, newMass)
 
-  override def logProbability(partition: Partition[A]) = {
-    val v1 = mass.logValue * partition.nClusters + mass.logGammaValue - logGamma(mass.value + partition.nItems)
+  override def logProbability(partition: Partition[A]): Double =  {
+    val v1 = partition.nClusters * mass.logValue + mass.logGammaValue - logGamma(mass.value + partition.nItems)
     val v2 = partition.foldLeft(0.0)((sum, subset) => sum + logGamma(subset.size))
     v1 + v2
   }
