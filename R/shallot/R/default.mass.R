@@ -245,6 +245,7 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
 #' @examples
 #'
 #' @family Default Mass Selection
+#' @importFrom sdols salso
 #' @export
 default.mass <- function(mass, list.epam, dis, new.draws = TRUE, w=c(1,1,1), discount=0, temp=10, loss="binder", n.draws=100L, two.stage=TRUE, parallel=TRUE) {
   if (missing(mass)) {
