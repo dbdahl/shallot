@@ -167,7 +167,11 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
     all <- sapply(unique(n[n>1]), function(i) compute.rankings(n == i))
     rankings <- rank(1-all["pc",])*w[1] + rank(all["vr",])*w[2] + all["n",]*w[3]
     index <- which.min(rankings)
-    out <- t(all[,c(best=index, index-1, index+1)])
+    if (index >= ncol(all)) {
+      out <- t(all[,c(best=index, index-1)])
+    } else {
+      out <- t(all[,c(best=index, index-1, index+1)])
+    }
   } else {
     best <- compute.rankings(n>1)
     index <- which(unique(n[n>1]) == best["n"])
@@ -176,7 +180,7 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
     out <- rbind(best,t(others))
   }
 
-  plot(mass,pc,type="l",ylim=c(0,1),col="dodgerblue")
+  plot(mass,pc,type="l",ylim=c(0,1),col="dodgerblue", ylab="")
   lines(vr[n>1]~mass[n>1],col="forestgreen")
   abline(v=out[1,"mass"])
   for (i in 2:nrow(out)) {
@@ -314,6 +318,7 @@ default.mass <- function(mass, list.epam, dis, new.draws = TRUE, w=c(1,1,1), dis
                  clustering = out.cl[[best.index]],
                  expectedPairwiseAllocationMatrix = list.epam[[best.index]],
                  params = list(discount = discount, temperature = temp, loss = loss),
+                 algorithm = data.frame(mass=mass, pc=pc, vr=vr, nClusters=ncl, nDraws=weight),
                  list.epam = list.epam)
   class(output) <- "shallot.default.mass"
   output
