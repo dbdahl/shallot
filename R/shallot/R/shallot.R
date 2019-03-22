@@ -981,6 +981,8 @@ sample.partitions <- function(x, n.draws, parallel=TRUE) {
     .sample.ewensAttraction(x$n.items,.massFactory(x$mass),.attractionFactory(x$attraction))
   } else if ( inherits(x,"shallot.distribution.ewensPitmanAttraction") ) {
     .sample.ewensPitmanAttraction(x$n.items,.massFactory(x$mass),.discountFactory(x$discount),.attractionFactory(x$attraction))
+  } else if ( inherits(x,"shallot.distribution.DDCRP") ) {
+    .sample.DDCRP(x$n.items,.massFactory(x$mass),.discountFactory(x$discount),.attractionFactory(x$attraction))   
   } else stop("Unrecognized partition distribution.")
   ref <- .sampleForward(n.draws,s$rdg(),forwardSampler,parallel)
   structure(list(ref=ref, names=x$names), class="shallot.samples.raw")
