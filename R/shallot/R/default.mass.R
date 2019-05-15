@@ -333,6 +333,7 @@ print.shallot.default.mass <- function(x, ...) {
   cat("number of clusters: ",x$criteria[1,"n"],"\npartition confidence: ",x$criteria[1,"pc"],"\nvariance ratio: ", x$criteria[1,"vr"], "\n", sep="")
   
   cat("\nestimated clustering:\n", x$clustering)
+  cat("\n")
 }
 
 
