@@ -2,27 +2,44 @@ name := "shallot"
 
 organization := "org.ddahl"
 
-version := "0.4.6.1"
-//version := "0.4.6.1-SNAPSHOT"
+//version := "0.4.6"
+version := "0.4.5-SNAPSHOT"
 
 scalaVersion := "2.12.8"
-
 crossScalaVersions := Seq("2.11.12", "2.12.8")
-
 scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature" )
 
-mainClass in (Compile,run) := Some("org.ddahl.shallot.example.Main")
-
 libraryDependencies ++= Seq(
-  "org.ddahl" %% "sdols" % "1.7.3.1",
-  "org.ddahl" %% "commonsmath" % "1.2.2.4",
   "org.apache.commons" % "commons-math3" % "3.6.1" withSources(),
-  "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+  "org.scalactic" %% "scalactic" % "3.0.8",
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 )
 
-resolvers += Resolver.bintrayRepo("dahl", "maven")
+libraryDependencies ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, major)) if major >= 13 =>
+      Seq("org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0")
+    case _ =>
+      Seq()
+  }
+}
 
-licenses := List(("Apache-2.0",url("https://www.apache.org/licenses/LICENSE-2.0")))
+Compile / unmanagedJars := {
+  val rPackages = Seq("commonsMath","sdols")
+  rPackages.flatMap { p =>
+    import scala.sys.process._
+    import scala.language.postfixOps
+    import java.io.File
+    val exe = if ( sys.env.getOrElse("R_HOME","") == "" ) "R" else {
+      Seq(sys.env("R_HOME"),"bin","R").mkString(File.separator)
+    }
+    val output = Seq(exe,"--slave","-e",s"writeLines(rscala:::jarsOfPackage('${p}','${scalaBinaryVersion.value}'))") !!
+    val cells = output.split("\n").toSeq
+    println(cells)
+    cells.map { path => Attributed.blank(new File(path)) }
+  }
+}
 
-publishMavenStyle := true
+mainClass in (Compile,run) := Some("org.ddahl.shallot.example.Main")
 

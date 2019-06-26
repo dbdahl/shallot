@@ -2,6 +2,8 @@ package org.ddahl.shallot
 package parameter
 package partition
 
+import scala.collection.parallel.immutable.ParVector
+
 class PairwiseProbability(x: Array[Array[Double]]) extends Matrix {
 
   val nItems = x.length
@@ -98,7 +100,7 @@ object PairwiseProbability {
     val nItems = partitions.head.nItems
     val totals = if (parallel) {
       val nCores = Runtime.getRuntime.availableProcessors
-      val lists = partitions.grouped((size / nCores) + 1).toList.par
+      val lists = ParVector(partitions.grouped((size / nCores) + 1).toList:_*)
       reduce(nItems, lists.map(x => tally(nItems, x)).toList)
     } else {
       tally(nItems, partitions)

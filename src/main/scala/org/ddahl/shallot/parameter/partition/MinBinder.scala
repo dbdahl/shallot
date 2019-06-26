@@ -3,6 +3,7 @@ package parameter
 package partition
 
 import scala.util.control.Breaks._
+import scala.collection.parallel.immutable.ParVector
 
 object MinBinder {
 
@@ -67,7 +68,7 @@ object MinBinder {
     if (parallel) {
       val nCores = Runtime.getRuntime.availableProcessors
       val size = partitions.size
-      val lists = partitions.grouped((size / nCores) + 1).toList.par
+      val lists = ParVector(partitions.grouped((size / nCores) + 1).toList:_*)
       lists.map(x => search(x, maxSubsets, maxScans, pp)).minBy(_._2)._1
     } else {
       search(partitions, maxSubsets, maxScans, pp)._1
