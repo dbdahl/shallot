@@ -7,6 +7,8 @@ import scala.collection.parallel.immutable.ParVector
 
 object MinBinder {
 
+  implicit val ordering = CrossCompatibility.doubleOrdering
+
   private def allocate[A](i: Int, partition: Partition[A], pp: PairwiseProbability) = {
     val absorbingSubset = partition.minBy(subset => {
       subset.foldLeft(0.0)((sum, k) => sum + (0.5 - pp(i, k)))

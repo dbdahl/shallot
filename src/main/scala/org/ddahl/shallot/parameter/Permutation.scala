@@ -17,7 +17,7 @@ class Permutation private (private val x: Array[Int]) extends Iterable[Int] {
 
   def nPreceeding(i: Int) = xinv(i)
 
-  def antecedents(i: Int) = x.view(0, xinv(i))
+  def antecedents(i: Int) = x.view.slice(0, xinv(i))
 
   def thin[A](subset: Subset[A], i: Int): Iterator[Int] = new Iterator[Int]() {
     val nPreceedingI = if (i < 0) 0 else xinv(i)

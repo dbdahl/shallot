@@ -25,7 +25,7 @@ trait TwoParameterNumberOfSubset {
     val w = new Array[Double](nItems)
     w(0) = 1.0
     for (t <- 1 until nItems) {
-      w(t) = (mass.value + discount.value * w.view(0, t).sum) / (mass.value + t)
+      w(t) = (mass.value + discount.value * w.view.slice(0, t).sum) / (mass.value + t)
     }
     w.sum
   }

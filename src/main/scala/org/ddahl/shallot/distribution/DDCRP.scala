@@ -89,8 +89,9 @@ class DDCRP[A] private (val samplingModel: SamplingModel[A], val mass: Mass, val
   private def enumerateEdges(nItems: Int, state: List[Array[Int]], depth: Int): List[Array[Int]] = {
     if (depth == nItems) state
     else {
-      Range(0, nItems).map(i =>
-        enumerateEdges(nItems, state.map(x => Array(i, x: _*)).toList, depth + 1)).flatten.toList
+      Range(0, nItems).map { i =>
+        enumerateEdges(nItems, state.map(x => i +: x).toList, depth + 1)
+      }.flatten.toList
     }
   }
 

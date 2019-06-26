@@ -83,6 +83,8 @@ private class DistributionWithSubsets[A](private val partition: Partition[A], pr
 
 object Distribution {
 
+  implicit val ordering = CrossCompatibility.doubleOrdering
+
   def apply[A](elements: Iterable[(Partition[A], Double)], onLogScale: Boolean, normalize: Boolean): Distribution[A] = {
     val x1 = if (onLogScale) {
       elements.map(y => (y._1, exp(y._2)))

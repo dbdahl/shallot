@@ -6,9 +6,7 @@ import parameter.partition._
 
 class DistributionBuilder[A] {
 
-  private var map = new scala.collection.mutable.HashMap[Partition[A], Double]() {
-    override def default(key: Partition[A]) = 0.0
-  }
+  private var map = new scala.collection.mutable.HashMap[Partition[A], Double].withDefaultValue(0.0)
 
   def process(partition: Partition[A], increment: Double) = {
     map(partition) += increment

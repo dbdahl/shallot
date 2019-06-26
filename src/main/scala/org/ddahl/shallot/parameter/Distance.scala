@@ -7,6 +7,8 @@ import org.apache.commons.math3.random.{ RandomDataGenerator => RDG }
 
 class Distance private (private val x: Array[Array[Double]]) extends Matrix {
 
+  implicit val ordering = CrossCompatibility.doubleOrdering
+
   val nItems = x.length
 
   // Just use "lower" triangular part

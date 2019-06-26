@@ -8,6 +8,8 @@ import parameter.partition._
 
 class EwensPitmanAttractionQuantile[A] private (val samplingModel: SamplingModel[A], val mass: Mass, val discount: Discount, val attraction: Attraction, val p: Double, val timesSize: Boolean) extends PartitionModel[A] with HasSamplingModel[EwensPitmanAttractionQuantile[A], A] with HasMass[EwensPitmanAttractionQuantile[A], A] with HasDiscount[EwensPitmanAttractionQuantile[A], A] with HasAttraction[EwensPitmanAttractionQuantile[A], A] {
 
+  implicit val ordering = CrossCompatibility.doubleOrdering
+
   def self = this
 
   def replaceSamplingModel(newSamplingModel: SamplingModel[A]) = new EwensPitmanAttractionQuantile(newSamplingModel, mass, discount, attraction, p, timesSize)

@@ -90,7 +90,7 @@ object Main {
         d = monitorMass(MassSampler.gaussianRandomWalk(d, p, massShape, massRate, massRWSD, rdg))
         d = monitorPermutation(PermutationSampler.update(d, p, k, rdg, Set()))
         d = monitorTemperature(TemperatureSampler.gaussianRandomWalk(d, p, temperatureShape, temperatureRate, temperatureRWSD, rdg))
-        println(d.mass + " " + d.attraction.decay + " " + monitorMass + " " + monitorPermutation + " " + monitorTemperature)
+        println("" + d.mass + " " + d.attraction.decay + " " + monitorMass + " " + monitorPermutation + " " + monitorTemperature)
         //println(p.toLabels.mkString(""))
       }
     }

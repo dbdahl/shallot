@@ -27,7 +27,7 @@ object Neal2000 {
         var priorModel = Ewens(samplingModel, Mass(1.0))
         for (i <- 0 until nReps) {
           partition = AuxiliaryGibbsSampler(partition, samplingModel, priorModel, rdg)._1
-          println(partition.nClusters + " " + partition.entropy + " # " + partition)
+          println("" + partition.nClusters + " " + partition.entropy + " # " + partition)
         }
       case "neal2000integrated" =>
         val samplingModel2 = new IntegratedNormalNormalModel(data, 0.1, 0.0, 1.0, rdg)
@@ -35,7 +35,7 @@ object Neal2000 {
         var priorModel2 = Ewens(samplingModel2, Mass(1.0))
         for (i <- 0 until nReps) {
           partition2 = AuxiliaryGibbsSampler(partition2, samplingModel2, priorModel2, rdg)._1
-          println(partition2.nClusters + " " + partition2.entropy + " # " + partition2)
+          println("" + partition2.nClusters + " " + partition2.entropy + " # " + partition2)
         }
       case "ea" => {
         var priorModel = EwensAttraction(samplingModel, Mass(1.0), Attraction(Distance.sample(nItems, rdg), Permutation.sample(nItems, rdg), ReciprocalDecayFactory(1.0)))
@@ -49,7 +49,7 @@ object Neal2000 {
           priorModel = MassSampler.escobarWest(priorModel, partition, massShape, massRate, rdg)._1
           priorModel = TemperatureSampler.gaussianRandomWalk(priorModel, partition, temperatureShape, temperatureRate, temperatureRWSD, rdg)._1
           priorModel = monitor(PermutationSampler.update(priorModel, partition, grabSize, rdg, Set()))
-          println(partition.nClusters + " " + partition.entropy + " " + priorModel.mass + " " + priorModel.attraction.decay + " " + monitor + " # " + partition)
+          println("" + partition.nClusters + " " + partition.entropy + " " + priorModel.mass + " " + priorModel.attraction.decay + " " + monitor + " # " + partition)
         }
       }
     }

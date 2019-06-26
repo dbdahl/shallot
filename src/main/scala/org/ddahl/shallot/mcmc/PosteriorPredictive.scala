@@ -7,6 +7,8 @@ import parameter.partition._
 
 object PosteriorPrediction {
 
+  implicit val ordering = CrossCompatibility.doubleOrdering
+
   def apply[A](partition: Partition[A], logPosteriorPredictive: (Partition[A]) => Iterable[(Subset[A],Double)], rdg: RDG): Subset[A] = {
     val x0 = logPosteriorPredictive(partition)
     val x1 = x0.map(y => (y._1, exp(y._2)))
