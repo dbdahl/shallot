@@ -29,14 +29,14 @@ Compile / unmanagedJars := {
   val rPackages = Seq("commonsMath","sdols")
   rPackages.flatMap { p =>
     import scala.sys.process._
-    import scala.language.postfixOps
     import java.io.File
     val exe = if ( sys.env.getOrElse("R_HOME","") == "" ) "R" else {
       Seq(sys.env("R_HOME"),"bin","R").mkString(File.separator)
     }
-    val output = Seq(exe,"--slave","-e",s"writeLines(rscala:::jarsOfPackage('${p}','${scalaBinaryVersion.value}'))") !!
-    val cells = output.split("\n").toSeq
-    println(cells)
+    val output = Seq(exe,"--slave","-e",s"writeLines(rscala:::jarsOfPackage('${p}','${scalaBinaryVersion.value}'))").!!
+    val cells = output.split(sys.props("line.separator")).toSeq
+    println(s"JARs from '${p}' package:")
+    println(cells.mkString("\n"))
     cells.map { path => Attributed.blank(new File(path)) }
   }
 }
