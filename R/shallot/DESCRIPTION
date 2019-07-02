@@ -7,7 +7,7 @@ Description: Implementations are provided for the models described in the paper 
 Authors@R: c(person(given="David B.",family="Dahl",role=c("aut","cre"),email="dahl@stat.byu.edu"))
 URL: https://github.com/dbdahl/shallot
 BugReports: https://github.com/dbdahl/shallot/issues
-Imports: rscala (> 3.2.13), sdols (> 1.7.4)
+Imports: rscala (>= 3.2.14), sdols (>= 1.7.5)
 License: Apache License 2.0 | file LICENSE
 RoxygenNote: 6.1.1
 Encoding: UTF-8

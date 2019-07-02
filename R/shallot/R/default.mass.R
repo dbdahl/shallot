@@ -144,7 +144,6 @@ partition.confidence <- function(x,y){
 #'   values for \code{pc}, \code{vr}, and \code{n}. The matrix also contains the
 #'   mass values for the partitions estimate with more one more and one less
 #'   subset that the selected mass value.
-#' @examples
 #'
 #' @family Default Mass Selection
 #' @importFrom graphics abline lines plot
@@ -246,7 +245,6 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
 #'   expected pairwise allocation matrix, parameters used for optimization and
 #'   the EPA distribution, and the list of expected pairwise allocation matrices
 #'   for each mass value.
-#' @examples
 #'
 #' @family Default Mass Selection
 #' @importFrom sdols salso
