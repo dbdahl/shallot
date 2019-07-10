@@ -1,7 +1,7 @@
 #' @import rscala
+#' 
 .onLoad <- function(libname, pkgname) {
   s <- sdols:::s
-  scalaJARs(pkgname,s)
   scalaLazy(function(s) s + '
     import org.ddahl.shallot._
     import parameter._
@@ -15,6 +15,6 @@
       new org.apache.commons.math3.random.EmpiricalDistribution()
     }
   ')
-  assign("s",s,envir=parent.env(environment()))  
+  assign("s",s,envir=parent.env(environment()))
 }
 
