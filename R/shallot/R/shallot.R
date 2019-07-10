@@ -935,8 +935,8 @@ nsubsets.variance <- function(x) {
       val nCores = Runtime.getRuntime.availableProcessors
       val nSamplesPerCore = (nSamples / nCores) + 1
       val randomGenerator = rdg.getRandomGenerator
-      val rdgList = List.fill(nCores) { new RDG(randomGenerator) }
-      rdgList.par.map(r => sampler(nSamplesPerCore, r)).toList.flatten
+      val rdgList = scala.collection.parallel.immutable.ParVector.fill(nCores) { new RDG(randomGenerator) }
+      rdgList.map(r => sampler(nSamplesPerCore, r)).toList.flatten
     }
   '
 }
