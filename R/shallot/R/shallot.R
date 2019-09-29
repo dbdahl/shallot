@@ -1108,16 +1108,15 @@ print.shallot.samples.full <- function(x, ...) {
 #' #samples.format1$hyperparameters
 #' #
 #' ### Post processing to find the partition estimate.
-#' #library(sdols)
-#' #pp <- expectedPairwiseAllocationMatrix(samples.format1$labels)
+#' #library(salso)
+#' #pp <- psm(samples.format1$labels)
 #' #est <- salso(pp)
-#' #plot(confidence(est,pp))
+#' #plot(confidence(est$estimate,pp))
 #' #\dontshow{
 #' #rscala::scalaDisconnect(shallot:::s)
 #' #}
 #' #}
 #' 
-#' @export sample.partitions.posterior
 sample.partitions.posterior <- function(partition, sampling.model, partition.model, n.draws, massRWSD=0.5, discountRWSD=0.1, k=min(length(partition),25), temperatureRWSD=0.5, progress.bar=interactive()) {
   pmR <- partition.model
   sampler <- function(p=s$".null_Partition[org.ddahl.rscala.RObject]"(),
@@ -1430,33 +1429,6 @@ process.samples <- function(x) {
 
 # Null sampling model
 .nullModel <- function() s$'.new_GeneralNullSamplingModel[org.ddahl.rscala.RObject]'()
-
-
-
-#' Enumerate Partitions
-#' 
-#' This function enumerates all possible partitions for a given number of
-#' items.
-#' 
-#' This function returns an enumeration of the partition of \code{n.items}
-#' items.
-#' 
-#' @param n.items An integer given then number of items to partition.
-#' @return A matrix of cluster labels in which each row represents a
-#' clusterings.
-#' @author David B. Dahl \email{dahl@@stat.byu.edu}
-#' @seealso \code{\link{process.samples}}
-#' @examples
-#' 
-#' \dontrun{
-#' example(shallot)
-#' }
-#' 
-#' @export enumerate.partitions
-enumerate.partitions <- function(n.items) {
-  ref <- s$.Partition.enumerate(s ^ function() {}, as.integer(n.items)[1])
-  .partitionsToMatrix(ref)
-}
 
 
 

@@ -28,7 +28,7 @@ association.matrix <- function(cl){
 #' pairwise allocation matrix.
 #'
 #' The \code{\link{variance.ratio}} function takes as input an object of class
-#' \code{sdols.confidence} and calculates the variance ratio for the estimated
+#' \code{salso.confidence} and calculates the variance ratio for the estimated
 #' partition from the corresponding expected pairwise allocation matrix (EPAM).
 #'
 #' The variance ratio is the weighted average of the within cluster variances of
@@ -36,7 +36,7 @@ association.matrix <- function(cl){
 #' the total variance of the EPAM.
 #'
 #' @param x,y If \code{y} is not specified then \code{x} must be an object of
-#'   class \code{sdols.confidence}. Otherwise, \code{x} is a vector of cluster
+#'   class \code{salso.confidence}. Otherwise, \code{x} is a vector of cluster
 #'   labels and \code{y} is an expected pairwise allocation matrix.
 #'
 #' @examples
@@ -48,10 +48,10 @@ association.matrix <- function(cl){
 #' @family Default Mass Selection
 #' @export
 variance.ratio <- function(x,y) {
-  if (inherits(x,"sdols.confidence")) {
-    cl.am <- association.matrix(x$clustering)
-    y <- x$expectedPairwiseAllocationMatrix
-    x <- x$clustering
+  if (inherits(x,"salso.confidence")) {
+    cl.am <- association.matrix(x$estimate)
+    y <- x$psm
+    x <- x$estimate
   } else {
     cl.am <- association.matrix(x)
   }
@@ -75,7 +75,7 @@ variance.ratio <- function(x,y) {
 #' from the corresponding expected pairwise allocation matrix (EPAM).
 #'
 #' The \code{\link{partition.confidence}} takes as input an object of class
-#' \code{sdols.confidence} and then calculates the partition confidence from the
+#' \code{salso.confidence} and then calculates the partition confidence from the
 #' expected pairwise allocation matrix.
 #'
 #' The partition confidence is the average values of the EPAM for items that are
@@ -93,10 +93,10 @@ variance.ratio <- function(x,y) {
 #' @family Default Mass Selection
 #' @export
 partition.confidence <- function(x,y){
-  if (inherits(x,"sdols.confidence")) {
-    if (length(unique(x$clustering)) == length(x$clustering)) return(0)
-    cl.am <- association.matrix(x$clustering)
-    y <- x$expectedPairwiseAllocationMatrix
+  if (inherits(x,"salso.confidence")) {
+    if (length(unique(x$estimate)) == length(x$estimate)) return(0)
+    cl.am <- association.matrix(x$estimate)
+    y <- x$psm
   } else {
     cl.am <- association.matrix(x)
   }
@@ -197,7 +197,7 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
 #' The function draws \code{n.draws} partitions at each specified mass value. If
 #' a vector of mass values is not given, then the default of
 #' \code{seq(0.1,10,0.2)} is used for loss
-#' \code{lowerBoundVariationOfInformation} and \code{seq(0.1,5,0.05)} used for
+#' \code{"VI.lb"} and \code{seq(0.1,5,0.05)} used for
 #' the other loss functions.
 #'
 #' If a list of expected pairwise allocation matrices (EPAM) is provided,
@@ -206,7 +206,7 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
 #' EPAMs is provided.
 #'
 #' A partition/clustering estimate from each EPAM is obtained using the SALSO
-#' method in \code{\link[sdols]{salso}}. The estimate given minimizes the
+#' method in \code{\link[salso]{salso}}. The estimate given minimizes the
 #' specified \code{loss} function with respect to the EPAM.
 #'
 #' The function then uses the \code{\link{mass.algorithm}} to select the optimal
@@ -225,10 +225,9 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
 #' @param discount parameter of the Ewens-Pitman Attraction distribution.
 #' @param temp temperature parameter of the Ewens-Pitman Attraction
 #'   distribution.
-#' @param loss One of "\code{squaredError}", "\code{absoluteError}",
-#'   "\code{binder}", or "\code{lowerBoundVariationOfInformation}" to indicate
-#'   the optimization should seek to minimize squared error loss, absolute error
-#'   loss, Binder loss (Binder 1978), or the lower bound of the variation of
+#' @param loss One of \code{"binder"} or \code{"VI.lb"} to indicate
+#'   the optimization should seek to minimize the expectation of the
+#'   Binder loss (Binder 1978) or the lower bound of the expectation of the variation of
 #'   information loss (Wade & Ghahramani 2017), respectively.
 #' @param n.draws number of draws of partitions to be obtained at each mass
 #'   value.
@@ -247,11 +246,11 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
 #'   for each mass value.
 #'
 #' @family Default Mass Selection
-#' @importFrom sdols salso
+#' @importFrom salso salso
 #' @export
-default.mass <- function(mass, list.epam, dis, new.draws = TRUE, w=c(1,1,1), discount=0, temp=10, loss="binder", n.draws=100L, two.stage=TRUE, parallel=TRUE) {
+default.mass <- function(mass, list.epam, dis, new.draws=TRUE, w=c(1,1,1), discount=0, temp=10, loss="binder", n.draws=100L, two.stage=TRUE, parallel=TRUE) {
   if (missing(mass)) {
-    if (loss == "lowerBoundVariationOfInformation") {
+    if (loss == "VI.lb" ) {
       mass <- seq(0.1,10,0.2)
     } else {
       mass <- seq(0.1,5,by=0.05)
@@ -300,7 +299,7 @@ default.mass <- function(mass, list.epam, dis, new.draws = TRUE, w=c(1,1,1), dis
     attr(x, "discount") <- NULL
     attr(x, "n.draws") <- NULL
     attr(x, "temperature") <- NULL
-    salso(x, loss=loss, multicore=parallel)
+    salso(x, loss=loss, parallel=parallel)$estimate
   })
 
   mass <- sapply(list.epam, attr, "mass")

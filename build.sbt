@@ -26,7 +26,7 @@ libraryDependencies ++= {
 }
 
 Compile / unmanagedJars := {
-  val rPackages = Seq("commonsMath","sdols")
+  val rPackages = Seq("commonsMath")
   rPackages.flatMap { p =>
     import scala.sys.process._
     import java.io.File
