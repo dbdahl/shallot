@@ -38,7 +38,7 @@ association.matrix <- function(cl){
 #' @param x,y If \code{y} is not specified then \code{x} must be an object of
 #'   class \code{salso.confidence}. Otherwise, \code{x} is a vector of cluster
 #'   labels and \code{y} is an expected pairwise allocation matrix.
-#'
+#' @return A vector of variance ratios.
 #' @examples
 #' x <- rep(c(1,2,3), times=c(2,3,5))
 #' y <- diag(10)
@@ -83,6 +83,7 @@ variance.ratio <- function(x,y) {
 #' partition confidence.
 #'
 #' @inheritParams variance.ratio
+#' @return A vector of partition confidences.
 #'
 #' @examples
 #' x <- rep(c(1,2,3), times=c(2,3,5))
@@ -148,6 +149,7 @@ partition.confidence <- function(x,y){
 #' @family Default Mass Selection
 #' @importFrom graphics abline lines plot
 #' @export
+#' 
 mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
   if (length(w) != 3) stop("Weights must be assigned to: PC VR N")
 
@@ -248,6 +250,7 @@ mass.algorithm <- function(mass,pc,vr,n,w=c(1,1,1),two.stage=TRUE) {
 #' @family Default Mass Selection
 #' @importFrom salso salso
 #' @export
+#' 
 default.mass <- function(mass, list.epam, dis, new.draws=TRUE, w=c(1,1,1), discount=0, temp=10, loss="binder", n.draws=100L, two.stage=TRUE, parallel=TRUE) {
   if (missing(mass)) {
     if (loss == "VI.lb" ) {
@@ -323,6 +326,7 @@ default.mass <- function(mass, list.epam, dis, new.draws=TRUE, w=c(1,1,1), disco
 
 #' @rdname default.mass
 #' @export
+#' 
 print.shallot.default.mass <- function(x, ...) {
   cat("Clustering estimated using loss: ",x$params$loss,", with discount ",
       x$params$discount," and temperature ", x$params$temperature,"\n\n",sep="")

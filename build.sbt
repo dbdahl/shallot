@@ -2,11 +2,11 @@ name := "shallot"
 
 organization := "org.ddahl"
 
-//version := "0.4.7"
-version := "0.4.6-SNAPSHOT"
+version := "0.4.7"
+//version := "0.4.7-SNAPSHOT"
 
-scalaVersion := "2.12.8"
-crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0")
+scalaVersion := "2.12.10"
+crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.1")
 scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature" )
 
 libraryDependencies ++= Seq(
