@@ -169,7 +169,7 @@ discount <- function(...,fixed=TRUE) {
 
 .discountFactory <- function(discount) {
   if ( discount$fixed ) s$Discount.factory(discount$value)
-  else s$Discount.factory(discount$shape,discount$rate,s$rdg())
+  else s$Discount.factory(discount$shape1,discount$shape2,s$rdg())
 }
 
 #' @rdname mass
@@ -1037,6 +1037,7 @@ print.shallot.samples.full <- function(x, ...) {
 #' @seealso \code{\link{partition.distribution}},
 #' \code{\link{process.samples}}, \code{\link{pairwise.probabilities}},
 #' \code{\link{estimate.partition}} \code{\link{sample.partitions}}
+#' @noRd
 #' @examples
 #' 
 #' 1+2
@@ -1065,7 +1066,7 @@ print.shallot.samples.full <- function(x, ...) {
 #' #s02Inv <- 1.0 / s02
 #' #c <- -1.0 / (2.0 * s2)
 #' #
-#' ### Sampling model of Neal (JCGS, 2009)
+#' ### Sampling model of Neal (JCGS, 2000)
 #' ### Function to perform an MCMC update of the parameter.
 #' #sample.parameter <- function(indices=scalaType("D1"), parameter=scalaType("D0")) {
 #' #  sum <- sum(data[indices])
