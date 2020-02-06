@@ -1,7 +1,7 @@
 Run 'install-R --devel'
 Bump version number in build.sbt
 Update R/*/NEWS detailing changes (including the date)
-Try to bump to latest versions in project/build.properties, project/plugins.sbt
+Try to bump to latest versions in project/build.properties
 Run 'package -sf'
 Test on Linux, Mac OS, and Windows (use https://win-builder.r-project.org/)
 Test depending packages

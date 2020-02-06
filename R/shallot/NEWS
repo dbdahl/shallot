@@ -1,3 +1,6 @@
+0.4.8 (2020-02-06)
+  * Fixed warning regarding "Documented arguments not in \usage" (PR#16223).
+
 0.4.7 (2019-10-01)
   * Remove dependency on sdols package.
 

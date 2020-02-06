@@ -728,7 +728,6 @@ print.shallot.distribution.ddcrp <- function(x, ...) {
 #' @param x An object of class \code{shallot.distribution}.
 #' @param n.samples An integer containing the number of samples.
 #' @param n.subsets An integer containing the number of subsets.
-#' @param ... Currently ignored.
 #' @return The \code{\link{nsubsets.random}} function returns a vector of
 #' random samples of the number of subsets in the distribution \var{x}.
 #' 
@@ -954,7 +953,6 @@ nsubsets.variance <- function(x) {
 #' to parallelization, slightly more samples may be returned.
 #' @param parallel Should sampling be done in parallel by simultaneously using
 #' all CPU cores?
-#' @param ... Currently ignored.
 #' @return An object of class \code{shallot.samples.raw} which can be
 #' subsequently be used in \code{\link{process.samples}},
 #' \code{\link{pairwise.probabilities}}, \code{\link{estimate.partition}},
@@ -964,7 +962,7 @@ nsubsets.variance <- function(x) {
 #' @author David B. Dahl \email{dahl@@stat.byu.edu}
 #' @seealso \code{\link{partition.distribution}},
 #' \code{\link{process.samples}}, \code{\link{pairwise.probabilities}},
-#' \code{\link{estimate.partition}} \code{\link{sample.partitions.posterior}}
+#' \code{\link{estimate.partition}}
 #' @examples
 #' 
 #' \dontrun{
@@ -1453,7 +1451,6 @@ process.samples <- function(x) {
 #' \code{\link{as.matrix}}.
 #' @param parallel Should all of the CPU cores should be used?  Defaults to
 #' \code{TRUE}.
-#' @param ... Currently ignored.
 #' @return The \code{\link{pairwise.probabilities}} function returns an object
 #' of class \code{shallot.pairwiseProbability}.
 #' 
