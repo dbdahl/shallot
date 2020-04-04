@@ -30,7 +30,7 @@
 #' estimate <- c(1,2,2,2,2,1,2,3,3)
 #' adj.rand.index(truth,estimate)
 #' 
-#' @export adj.rand.index
+#' @noRd
 adj.rand.index <- function(c1,c2) {
   n <- length(c1)
   if ( length(c2) != n ) stop("Clusterings must be the same length.")
@@ -541,7 +541,6 @@ print.shallot.attraction <- function(x, ...) {
 }
 
 #' @rdname attraction
-#' @export
 as.matrix.shallot.attraction <- function(x, ...) {
   stop("No yet implemented.")
   y <- x$ref$toArray()
@@ -769,6 +768,7 @@ nsubsets.random <- function(x,n.samples) {
   n.samples <- as.integer(n.samples)
   if ( n.samples < 0 ) stop("'n.samples' must be positive.")
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
+  scalaEnsure()
   mass <- .massFactory(x$mass)
   n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
@@ -795,6 +795,7 @@ nsubsets.probability <- function(x,n.subsets) {
   n.subsets <- as.integer(n.subsets)
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
+  scalaEnsure()
   mass <- .mass(x$mass)
   n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
@@ -820,6 +821,7 @@ nsubsets.probability <- function(x,n.subsets) {
 nsubsets.average <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
+  scalaEnsure()
   mass <- .mass(x$mass)
   n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
@@ -846,6 +848,7 @@ nsubsets.average <- function(x) {
 nsubsets.variance <- function(x) {
   if ( any( ! ( c("mass","n.items") %in% names(x) ) ) ) stop("Unrecognized distribution.")
   if ( ! x$mass$fixed ) stop("'mass' must be fixed for this function, but emperical estimates are available through the 'nsubsets.random' function.")
+  scalaEnsure()
   mass <- .mass(x$mass)
   n.items <- x$n.items
   if ( inherits(x,"shallot.distribution.ewens") ) {
@@ -954,15 +957,13 @@ nsubsets.variance <- function(x) {
 #' @param parallel Should sampling be done in parallel by simultaneously using
 #' all CPU cores?
 #' @return An object of class \code{shallot.samples.raw} which can be
-#' subsequently be used in \code{\link{process.samples}},
-#' \code{\link{pairwise.probabilities}}, \code{\link{estimate.partition}},
+#' subsequently be used in \code{\link{process.samples}}.
 #' @note If this function is interrupted by the user, the computation engine
 #' will be broken and subsequent calls to package functions may fail until a
 #' new session is started.
 #' @author David B. Dahl \email{dahl@@stat.byu.edu}
 #' @seealso \code{\link{partition.distribution}},
-#' \code{\link{process.samples}}, \code{\link{pairwise.probabilities}},
-#' \code{\link{estimate.partition}}
+#' \code{\link{process.samples}}
 #' @examples
 #' 
 #' \dontrun{
@@ -971,6 +972,7 @@ nsubsets.variance <- function(x) {
 #' 
 #' @export sample.partitions
 sample.partitions <- function(x, n.draws, parallel=TRUE) {
+  scalaEnsure()
   forwardSampler <- if ( inherits(x,"shallot.distribution.ewens") ) {
     .sample.ewens(x$n.items,.massFactory(x$mass))
   } else if ( inherits(x,"shallot.distribution.ewensPitman") ) {
@@ -1025,16 +1027,14 @@ print.shallot.samples.full <- function(x, ...) {
 #' for updating the temperature parameter.
 #' @param progress.bar Should a progress bar be shown while sampling?
 #' @return An object of class \code{shallot.samples.raw} which can be
-#' subsequently be used in \code{\link{process.samples}},
-#' \code{\link{pairwise.probabilities}}, \code{\link{estimate.partition}},
+#' subsequently be used in \code{\link{process.samples}}.
 #' @note If this function is interrupted by the user, the computation engine
 #' will be broken and subsequent calls to package functions may fail until a
 #' new session is started.
 #' @author David B. Dahl \email{dahl@@stat.byu.edu}
 #' @importFrom utils capture.output txtProgressBar
 #' @seealso \code{\link{partition.distribution}},
-#' \code{\link{process.samples}}, \code{\link{pairwise.probabilities}},
-#' \code{\link{estimate.partition}} \code{\link{sample.partitions}}
+#' \code{\link{process.samples}}, \code{\link{sample.partitions}}
 #' @noRd
 #' @examples
 #' 
@@ -1117,6 +1117,7 @@ print.shallot.samples.full <- function(x, ...) {
 #' #}
 #' 
 sample.partitions.posterior <- function(partition, sampling.model, partition.model, n.draws, massRWSD=0.5, discountRWSD=0.1, k=min(length(partition),25), temperatureRWSD=0.5, progress.bar=interactive()) {
+  scalaEnsure()
   pmR <- partition.model
   sampler <- function(p=s$".null_Partition[org.ddahl.rscala.RObject]"(),
                       sm=s$".null_SamplingModel[org.ddahl.rscala.RObject]"(),
@@ -1284,6 +1285,7 @@ sample.partitions.posterior <- function(partition, sampling.model, partition.mod
 #' 
 #' @export partition.pmf
 partition.pmf <- function(x) {
+  scalaEnsure()
   distribution <- .partitionModel(x)
   pmf <- distribution$logProbability
   function(x, log=TRUE) {
@@ -1318,6 +1320,7 @@ partition.pmf <- function(x) {
 #' \code{indices} and parameter \code{parameter}.
 #' @return An object of class \code{shallot.distribution.data}.
 #' @author David B. Dahl \email{dahl@@stat.byu.edu}
+#' @noRd
 #' @examples
 #' 
 #' ## Model inputs.
@@ -1350,7 +1353,6 @@ partition.pmf <- function(x) {
 #' sm <- sampling.model(sample.parameter, log.density)
 #' sm
 #' 
-#' @export sampling.model
 sampling.model <- function(sample.parameter, log.density) {
   if ( ! is.function(sample.parameter) ) stop("'sample.parameter' should be a function.")
   if ( length(formals(sample.parameter)) != 2 ) stop("'sample.parameter' should take two arguments named 'indices' and 'parameter'.")
@@ -1414,6 +1416,7 @@ sampling.model <- function(sample.parameter, log.density) {
 #' 
 #' @export process.samples
 process.samples <- function(x) {
+  scalaEnsure()
   if ( ( ! inherits(x,"shallot.samples.raw") ) && ( ! inherits(x,"shallot.samples.full") ) ) stop("'x' should be a result from the functions 'sample.partitions' or 'sample.partitions.posterior'.")
   if ( inherits(x,"shallot.samples.full") ) {
     result <- scalaPull(x$raw$ref, "clustering", names=x$raw$names, withParameters=TRUE)
@@ -1465,25 +1468,23 @@ process.samples <- function(x) {
 #' example(shallot)
 #' }
 #' 
-#' @export pairwise.probabilities
+#' @noRd
 pairwise.probabilities <- function(x, parallel=TRUE) {
   if ( inherits(x,"shallot.samples.full") ) x <- x$raw
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the functions 'sample.partitions' or 'sample.partitions.posterior'.")
+  scalaEnsure()
   start.time <- proc.time()
   ref <- s$.PairwiseProbability(x$ref,as.logical(parallel))
   result <- list(ref=ref,n.items=ref$nItems(),names=x$names,proc.time=proc.time()-start.time)
   structure(result, class="shallot.pairwiseProbability")
 }
 
-#' @export pairwise.probabilities
-#' @export
 print.shallot.pairwiseProbability <- function(x, ...) {
   cat("pairwise probabilities for ",x$n.items," items --- use 'as.matrix' function to obtain matrix\n",sep="")
 }
 
-#' @export pairwise.probabilities
-#' @export
 as.matrix.shallot.pairwiseProbability <- function(x, ...) {
+  scalaEnsure()
   structure(x$ref$toArray(), dimnames=list(x$names,x$names))
 }
 
@@ -1526,7 +1527,7 @@ as.matrix.shallot.pairwiseProbability <- function(x, ...) {
 #' example(shallot)
 #' }
 #' 
-#' @export estimate.partition
+#' @noRd
 estimate.partition <- function(x, pairwise.probabilities=NULL, max.subsets=0, max.scans=0, parallel=TRUE) {
   if ( inherits(x,"shallot.samples.full") ) x <- x$raw
   if ( ! inherits(x,"shallot.samples.raw") ) stop("'x' should be a result from the functions 'sample.partitions' or 'sample.partitions.posterior'.")

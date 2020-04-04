@@ -16,7 +16,7 @@
 #' @docType package
 #' @author David B. Dahl \email{dahl@@stat.byu.edu}
 #' @seealso \code{\link{ewens.pitman.attraction}},
-#' \code{\link{sample.partitions}}, \code{\link{estimate.partition}}
+#' \code{\link{sample.partitions}}
 #' @references \href{https://doi.org/10.1080/01621459.2016.1165103}{Dahl, D. B.,
 #' Day, R., and Tsai, J. (2017), Random Partition Distribution Indexed by
 #' Pairwise Information, \emph{Journal of the American Statistical
