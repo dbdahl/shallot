@@ -2,8 +2,8 @@ name := "shallot"
 
 organization := "org.ddahl"
 
-version := "0.4.9"
-//version := "0.4.9-SNAPSHOT"
+//version := "0.4.10"
+version := "0.4.9-SNAPSHOT"
 
 scalaVersion := "2.13.1"
 crossScalaVersions := Seq("2.11.12", "2.12.11", "2.13.1")
