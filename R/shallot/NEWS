@@ -1,3 +1,8 @@
+0.4.10 (2020-11-09)
+  * Drop dependency on the salso package.
+  * Drop default.mass function and related functions.
+  * Updated to lastest dependencies.
+
 0.4.9 (2020-04-03)
   * Drop functions that have been superceded by the salso package:
     adj.rand.index, estimate.partition, pairwise.probabilities,
