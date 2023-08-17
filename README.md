@@ -7,9 +7,10 @@ We propose the attraction Indian buffet distribution (AIBD), a distribution for 
 In R, install the package by executing:
 
 ```R
+install.packages("commonsMath")
 install.packages("remotes")
 remotes::install_github("dbdahl/rscala/R/rscala")
-remotes::install_github("dbdahl/aibd/R/shallot")
+remotes::install_github("dbdahl/shallot/R/shallot")
 ```
 
 ## Resources
